@@ -43,6 +43,7 @@
             comboMapTreatment = new ComboBox();
             comboSurfaceType = new ComboBox();
             btnSaveChanges = new Button();
+            btnBulkUpdate = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -131,7 +132,7 @@
             // lbl_Manual
             // 
             lbl_Manual.AutoSize = true;
-            lbl_Manual.Location = new Point(407, 568);
+            lbl_Manual.Location = new Point(350, 567);
             lbl_Manual.Name = "lbl_Manual";
             lbl_Manual.Size = new Size(93, 15);
             lbl_Manual.TabIndex = 9;
@@ -141,9 +142,9 @@
             // 
             comboMapTreatment.FormattingEnabled = true;
             comboMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
-            comboMapTreatment.Location = new Point(506, 568);
+            comboMapTreatment.Location = new Point(439, 568);
             comboMapTreatment.Name = "comboMapTreatment";
-            comboMapTreatment.Size = new Size(121, 23);
+            comboMapTreatment.Size = new Size(74, 23);
             comboMapTreatment.TabIndex = 10;
             comboMapTreatment.SelectedIndexChanged += comboMapTreatment_SelectedIndexChanged;
             // 
@@ -153,7 +154,7 @@
             comboSurfaceType.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
             comboSurfaceType.Location = new Point(280, 568);
             comboSurfaceType.Name = "comboSurfaceType";
-            comboSurfaceType.Size = new Size(121, 23);
+            comboSurfaceType.Size = new Size(64, 23);
             comboSurfaceType.TabIndex = 11;
             comboSurfaceType.SelectedIndexChanged += comboSurfaceType_SelectedIndexChanged;
             // 
@@ -167,12 +168,23 @@
             btnSaveChanges.UseVisualStyleBackColor = true;
             btnSaveChanges.Click += btnSaveChanges_Click;
             // 
+            // btnBulkUpdate
+            // 
+            btnBulkUpdate.Location = new Point(519, 568);
+            btnBulkUpdate.Name = "btnBulkUpdate";
+            btnBulkUpdate.Size = new Size(75, 23);
+            btnBulkUpdate.TabIndex = 13;
+            btnBulkUpdate.Text = "Change All";
+            btnBulkUpdate.UseVisualStyleBackColor = true;
+            btnBulkUpdate.Click += btnBulkUpdate_Click;
+            // 
             // ClassificationViewerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(1057, 601);
+            Controls.Add(btnBulkUpdate);
             Controls.Add(btnSaveChanges);
             Controls.Add(comboSurfaceType);
             Controls.Add(comboMapTreatment);
@@ -209,5 +221,6 @@
         private ComboBox comboMapTreatment;
         private ComboBox comboSurfaceType;
         private Button btnSaveChanges;
+        private Button btnBulkUpdate;
     }
 }

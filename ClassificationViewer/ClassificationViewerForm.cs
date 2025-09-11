@@ -214,5 +214,40 @@ namespace ClassificationViewer
             }
         }
 
+        private void btnBulkUpdate_Click(object sender, EventArgs e)
+        {
+            if (currentMatch == null)
+            {
+                MessageBox.Show("No CSV match found for the current image.");
+                return;
+            }
+
+            // Get all records for the same filename
+            var fileRecords = csvHelper.Records
+                .Where(r => r.Filename1 == currentMatch.Filename1)
+                .OrderBy(r => r.MinOfChFrom) // sort so distances are in order
+                .ToList();
+
+            using (var form = new BulkUpdateForm(surfaceOptions, fileRecords))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    double start = form.StartDistance;
+                    double end = form.EndDistance;
+                    string surfaceType = form.SelectedSurfaceType;
+                    string mapTreatment = form.SelectedMapTreatment;
+
+                    if (!string.IsNullOrEmpty(surfaceType))
+                        csvHelper.BulkUpdateSurfaceType(start, end, surfaceType);
+
+                    if (!string.IsNullOrEmpty(mapTreatment))
+                        csvHelper.BulkUpdateMapTreatment(start, end, mapTreatment);
+
+                    MessageBox.Show("Bulk update applied successfully!", "Info",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
     }
 }

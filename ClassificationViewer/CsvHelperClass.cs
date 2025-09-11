@@ -157,5 +157,31 @@ namespace ClassificationViewer
             return null;
         }
 
+        public void BulkUpdateSurfaceType(double startDistance, double endDistance, string newSurfaceType)
+        {
+            foreach (var r in records)
+            {
+                if (r.MinOfChFrom >= startDistance && r.MaxOfChTo <= endDistance)
+                {
+                    r.SurfaceType = newSurfaceType;
+                    // Optional: update prediction match if desired
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType)) ? "True" : "False";
+                }
+            }
+        }
+
+        public void BulkUpdateMapTreatment(double startDistance, double endDistance, string newMapTreatment)
+        {
+            foreach (var r in records)
+            {
+                if (r.MinOfChFrom >= startDistance && r.MaxOfChTo <= endDistance)
+                {
+                    r.MapTreatment = newMapTreatment;
+                    // Optional: update prediction match
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment)) ? "True" : "False";
+                }
+            }
+        }
+
     }
 }
