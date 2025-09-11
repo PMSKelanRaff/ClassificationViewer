@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "RPRxcRn298M=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\ClassificationViewer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KelanRafferty\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
