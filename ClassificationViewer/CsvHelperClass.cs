@@ -86,7 +86,7 @@ namespace ClassificationViewer
             }
         }
 
-        public void SaveCsv()
+        public void SaveCsv(bool saveAsUpdatedFile = false)
         {
             if (string.IsNullOrEmpty(loadedCsvPath))
             {
@@ -94,23 +94,34 @@ namespace ClassificationViewer
                 return;
             }
 
-            using (var writer = new StreamWriter(loadedCsvPath, false, Encoding.UTF8))
+            string outputPath = loadedCsvPath;
+            if (saveAsUpdatedFile)
             {
-                // Write header exactly as original
-                writer.WriteLine("RID\tSU\tWE\tFilename1\tROW_folder\tMinOfChFrom\tMaxOfChTo\tSurfaceType\tMapTreatment\tprediction_match\timages_found_in_range\tnum_images_in_range");
+                string dir = Path.GetDirectoryName(loadedCsvPath);
+                string fileName = Path.GetFileNameWithoutExtension(loadedCsvPath);
+                string ext = Path.GetExtension(loadedCsvPath);
+                outputPath = Path.Combine(dir, $"{fileName}_updated{ext}");
+            }
+
+            using (var writer = new StreamWriter(outputPath, false, Encoding.UTF8))
+            {
+                // Write header with commas
+                writer.WriteLine("RID,SU,WE,Filename1,ROW_folder,MinOfChFrom,MaxOfChTo,SurfaceType,MapTreatment,prediction_match,images_found_in_range,num_images_in_range");
 
                 foreach (var record in records)
                 {
-                    writer.WriteLine($"{record.RID}\t{record.SU}\t{record.WE}\t{record.Filename1}\t{record.ROW_folder}\t" +
-                                     $"{record.MinOfChFrom.ToString("0.##", CultureInfo.InvariantCulture)}\t" +
-                                     $"{record.MaxOfChTo.ToString("0.##", CultureInfo.InvariantCulture)}\t" +
-                                     $"{record.SurfaceType}\t{record.MapTreatment}\t" +
-                                     $"{NormalizeBool(record.PredictionMatch)}\t{NormalizeBool(record.ImagesFoundInRange)}\t" +
-                                     $"{record.NumImagesInRange}");
+                    writer.WriteLine(
+                        $"{record.RID},{record.SU},{record.WE},{record.Filename1},{record.ROW_folder}," +
+                        $"{record.MinOfChFrom.ToString("0.0##", CultureInfo.InvariantCulture)}," +
+                        $"{record.MaxOfChTo.ToString("0.0##", CultureInfo.InvariantCulture)}," +
+                        $"{record.SurfaceType},{record.MapTreatment}," +
+                        $"{NormalizeBool(record.PredictionMatch)},{NormalizeBool(record.ImagesFoundInRange)}," +
+                        $"{record.NumImagesInRange}"
+                    );
                 }
             }
 
-            Console.WriteLine($"Saved {records.Count} CSV records back to {loadedCsvPath}");
+            Console.WriteLine($"Saved {records.Count} CSV records to {outputPath}");
         }
 
         private string NormalizeBool(string? value)

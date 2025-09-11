@@ -42,7 +42,8 @@
               "RelativeToolTip": "ClassificationViewer\\CsvRecord.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-09T08:51:18.326Z"
+              "WhenOpened": "2025-09-09T08:51:18.326Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -52,7 +53,7 @@
               "RelativeDocumentMoniker": "ClassificationViewer\\CsvHelperClass.cs",
               "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\CsvHelperClass.cs",
               "RelativeToolTip": "ClassificationViewer\\CsvHelperClass.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAEwGkAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-08T15:48:11.358Z",
               "EditorCaption": ""
@@ -65,9 +66,10 @@
               "RelativeDocumentMoniker": "ClassificationViewer\\ClassificationViewerForm.cs",
               "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\ClassificationViewerForm.cs",
               "RelativeToolTip": "ClassificationViewer\\ClassificationViewerForm.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAALAAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAEsAAAAAAAAAAAA8wM0AAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-04T11:36:24.436Z"
+              "WhenOpened": "2025-09-04T11:36:24.436Z",
+              "EditorCaption": ""
             }
           ]
         }

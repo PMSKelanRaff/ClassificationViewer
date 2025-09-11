@@ -82,7 +82,7 @@ namespace ClassificationViewer
 
         private void btnSaveChanges_Click(object sender, EventArgs e)
         {
-            csvHelper.SaveCsv();
+            csvHelper.SaveCsv(true);
             hasUnsavedChanges = false;
             btnSaveChanges.Enabled = false;
             MessageBox.Show("CSV changes saved successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -185,7 +185,11 @@ namespace ClassificationViewer
                 // Update only the SurfaceType of all rows that match this image
                 var matches = csvHelper.FindMatches(imageFiles[currentIndex]);
                 foreach (var r in matches)
+                {
                     r.SurfaceType = newValue;
+                    // Update prediction_match if SurfaceType and MapTreatment match
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType)) ? "True" : "False";
+                }
 
                 DisplayImage(); // redraw overlay
             }
@@ -200,7 +204,11 @@ namespace ClassificationViewer
                 // Update only the MapTreatment of all rows that match this image
                 var matches = csvHelper.FindMatches(imageFiles[currentIndex]);
                 foreach (var r in matches)
+                {
                     r.MapTreatment = newValue;
+                    // Update prediction_match if SurfaceType and MapTreatment match
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment)) ? "True" : "False";
+                }
 
                 DisplayImage(); // redraw overlay
             }

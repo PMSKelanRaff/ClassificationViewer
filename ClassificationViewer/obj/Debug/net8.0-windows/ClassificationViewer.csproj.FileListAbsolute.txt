@@ -17,3 +17,4 @@ C:\Users\KelanRafferty\source\repos\ClassificationViewer\ClassificationViewer\ob
 C:\Users\KelanRafferty\source\repos\ClassificationViewer\ClassificationViewer\obj\Debug\net8.0-windows\ClassificationViewer.pdb
 C:\Users\KelanRafferty\source\repos\ClassificationViewer\ClassificationViewer\obj\Debug\net8.0-windows\ClassificationViewer.genruntimeconfig.cache
 C:\Users\KelanRafferty\source\repos\ClassificationViewer\ClassificationViewer\obj\Debug\net8.0-windows\ref\ClassificationViewer.dll
+C:\Users\KelanRafferty\source\repos\ClassificationViewer\ClassificationViewer\obj\Debug\net8.0-windows\ClassificationViewer.sourcelink.json
