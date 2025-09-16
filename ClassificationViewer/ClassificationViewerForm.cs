@@ -1,3 +1,4 @@
+using System.Globalization;
 using CsvHelper;
 
 namespace ClassificationViewer
@@ -13,6 +14,10 @@ namespace ClassificationViewer
         private CsvRecord currentMatch;
         private bool hasUnsavedChanges = false;
 
+        //block navigation
+        private int currentBlockIndex = 0;
+        private List<(double Start, double End, string Surface, string Treatment)> fileBlocks;
+
 
         public ClassificationViewerForm()
         {
@@ -22,8 +27,12 @@ namespace ClassificationViewer
         //Buttons
         private void btnSelectFolder_Click(object sender, EventArgs e)
         {
+
             using (var fbd = new FolderBrowserDialog())
             {
+                // Set default path
+                fbd.SelectedPath = @"\\PQ05758\2024-Backup\RSP Imagery 2024\RSP TII Network Survey Imagery 2024\WE20240608\N51D224A\N51D224A_ROW";
+
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
                     imageFiles = Directory.GetFiles(fbd.SelectedPath, "*.JPG")
@@ -44,6 +53,7 @@ namespace ClassificationViewer
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
+                ofd.InitialDirectory = @"C:\Users\KelanRafferty\Desktop\prediction_mismatch_report.csv";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     csvHelper.LoadCsv(ofd.FileName);
@@ -87,6 +97,64 @@ namespace ClassificationViewer
             btnSaveChanges.Enabled = false;
             MessageBox.Show("CSV changes saved successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void btnBulkUpdate_Click(object sender, EventArgs e)
+        {
+            if (currentMatch == null)
+            {
+                MessageBox.Show("No CSV match found for the current image.");
+                return;
+            }
+
+            var fileRecords = csvHelper.Records
+                .Where(r => r.Filename1 == currentMatch.Filename1)
+                .OrderBy(r => r.MinOfChFrom)
+                .ToList();
+
+            // Decide which field to use as reference (SurfaceType or MapTreatment)
+            // You could even let the user pick with a toggle.
+            var (start, end) = FindBlockForCurrentRecord(currentMatch);
+
+            using (var form = new BulkUpdateForm(surfaceOptions, fileRecords, start, end))
+            {
+                // Preselect defaults in the form
+                form.PreselectRange(start, end);
+
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    double blockStart = form.StartDistance;
+                    double blockEnd = form.EndDistance;
+
+                    if (!string.IsNullOrEmpty(form.SelectedSurfaceType))
+                        csvHelper.BulkUpdateSurfaceType(blockStart, blockEnd, form.SelectedSurfaceType);
+
+                    if (!string.IsNullOrEmpty(form.SelectedMapTreatment))
+                        csvHelper.BulkUpdateMapTreatment(blockStart, blockEnd, form.SelectedMapTreatment);
+                }
+            }
+        }
+
+        private void play_Click(object sender, EventArgs e)
+        {
+            timer1.Start();
+        }
+
+        private void pause_Click(object sender, EventArgs e)
+        {
+            timer1.Stop();
+        }
+
+        private void btnNextBlock_Click(object sender, EventArgs e)
+        {
+            NavigateToBlock(next: true);
+        }
+
+        private void btnPreviousBlock_Click_1(object sender, EventArgs e)
+        {
+            NavigateToBlock(next: false);
+        }
+
+
 
         //Events
         private void DisplayImage()
@@ -214,39 +282,129 @@ namespace ClassificationViewer
             }
         }
 
-        private void btnBulkUpdate_Click(object sender, EventArgs e)
+        private void TestTimerTick(object sender, EventArgs e)
         {
-            if (currentMatch == null)
+            if (imageFiles.Count == 0) return;
+            currentIndex = (currentIndex + 1) % imageFiles.Count;
+            DisplayImage();
+        }
+
+        private (double Start, double End) FindBlockForCurrentRecord(CsvRecord current)
+        {
+            if (current == null) return (0, 0);
+
+            // Get all records for the same file, ordered by MinOfChFrom
+            var fileRecords = csvHelper.Records
+                .Where(r => r.Filename1 == current.Filename1)
+                .OrderBy(r => r.MinOfChFrom)
+                .ToList();
+
+            if (!fileRecords.Any()) return (current.MinOfChFrom, current.MaxOfChTo);
+
+            // Initialize current block
+            double blockStart = fileRecords[0].MinOfChFrom;
+            double blockEnd = fileRecords[0].MaxOfChTo;
+            string currentSurface = fileRecords[0].SurfaceType;
+            string currentTreatment = fileRecords[0].MapTreatment;
+
+            foreach (var r in fileRecords.Skip(1))
             {
-                MessageBox.Show("No CSV match found for the current image.");
+                // Strict: block continues only if both SurfaceType and MapTreatment match
+                if (r.SurfaceType == currentSurface && r.MapTreatment == currentTreatment)
+                {
+                    blockEnd = r.MaxOfChTo;
+                }
+                else
+                {
+                    // If current record is within the previous block, return it
+                    if (current.MinOfChFrom >= blockStart && current.MaxOfChTo <= blockEnd)
+                        return (blockStart, blockEnd);
+
+                    // Start new block
+                    blockStart = r.MinOfChFrom;
+                    blockEnd = r.MaxOfChTo;
+                    currentSurface = r.SurfaceType;
+                    currentTreatment = r.MapTreatment;
+                }
+            }
+
+            // If current record is in the last block
+            if (current.MinOfChFrom >= blockStart && current.MaxOfChTo <= blockEnd)
+                return (blockStart, blockEnd);
+
+            // Fallback: just return current record
+            return (current.MinOfChFrom, current.MaxOfChTo);
+        }
+
+        // Core navigation logic
+        private void NavigateToBlock(bool next)
+        {
+            if (imageFiles.Count == 0) return;
+
+            double? currentDistance = GetDistanceFromFilename(imageFiles[currentIndex]);
+            if (currentDistance == null) return;
+
+            // Extract base filename for CSV match
+            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0];
+
+            var fileRecords = csvHelper.Records
+                .Where(r => r.Filename1 == currentFile)
+                .OrderBy(r => r.MinOfChFrom)
+                .ToList();
+
+            if (!fileRecords.Any()) return;
+
+            var blocks = BulkUpdateForm.GetStrictBlocks(fileRecords);
+            if (blocks.Count == 0) return;
+
+            int blockIndex = blocks.FindIndex(b => currentDistance >= b.Start && currentDistance <= b.End);
+
+            if (blockIndex == -1)
+            {
+                blockIndex = next ? -1 : blocks.Count;
+            }
+
+            int targetIndex = next ? blockIndex + 1 : blockIndex - 1;
+
+            if (targetIndex < 0 || targetIndex >= blocks.Count)
+            {
+                MessageBox.Show(next ? "No next block found." : "No previous block found.");
                 return;
             }
 
-            // Get all records for the same filename
-            var fileRecords = csvHelper.Records
-                .Where(r => r.Filename1 == currentMatch.Filename1)
-                .OrderBy(r => r.MinOfChFrom) // sort so distances are in order
-                .ToList();
+            var targetBlock = blocks[targetIndex];
 
-            using (var form = new BulkUpdateForm(surfaceOptions, fileRecords))
+            double tolerance = 0.0001;
+            var nextIndex = imageFiles.FindIndex(f =>
             {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    double start = form.StartDistance;
-                    double end = form.EndDistance;
-                    string surfaceType = form.SelectedSurfaceType;
-                    string mapTreatment = form.SelectedMapTreatment;
+                double? dist = GetDistanceFromFilename(f);
+                return dist != null && dist + tolerance >= targetBlock.Start && dist - tolerance <= targetBlock.End;
+            });
 
-                    if (!string.IsNullOrEmpty(surfaceType))
-                        csvHelper.BulkUpdateSurfaceType(start, end, surfaceType);
-
-                    if (!string.IsNullOrEmpty(mapTreatment))
-                        csvHelper.BulkUpdateMapTreatment(start, end, mapTreatment);
-
-                    MessageBox.Show("Bulk update applied successfully!", "Info",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+            if (nextIndex >= 0)
+            {
+                currentIndex = nextIndex;
+                // Update currentMatch if CSV exists
+                currentMatch = fileRecords.FirstOrDefault(r =>
+                    Math.Abs(r.MinOfChFrom - targetBlock.Start) < 0.001);
+                DisplayImage(); // refresh PictureBox
             }
+            else
+            {
+                MessageBox.Show("No image found for the target block.");
+            }
+        }
+
+        private double? GetDistanceFromFilename(string imageFile)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(imageFile);
+            // Expecting "N51D224A    7.805 1"
+            var parts = fileName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length >= 2 && double.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out double distance))
+                return distance;
+
+            return null;
         }
 
     }

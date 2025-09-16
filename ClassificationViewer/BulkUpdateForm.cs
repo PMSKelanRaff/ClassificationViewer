@@ -12,20 +12,34 @@ namespace ClassificationViewer
 {
     public partial class BulkUpdateForm : Form
     {
-        public BulkUpdateForm(string[] surfaceOptions, List<CsvRecord> fileRecords)
+        public BulkUpdateForm(string[] surfaceOptions, List<CsvRecord> fileRecords, double blockStart, double blockEnd)
         {
             InitializeComponent();
 
-            // Populate the surface/map treatment choices
+            // Populate SurfaceType and MapTreatment choices
             comboSurfaceType.Items.AddRange(surfaceOptions);
             comboMapTreatment.Items.AddRange(surfaceOptions);
 
-            // Populate start/end distances from this file’s records
+            // Populate start/end ComboBoxes with distances
             foreach (var r in fileRecords)
             {
                 string label = $"{r.MinOfChFrom:0.00} → {r.MaxOfChTo:0.00}";
                 comboStart.Items.Add(new DistanceOption(label, r.MinOfChFrom));
                 comboEnd.Items.Add(new DistanceOption(label, r.MaxOfChTo));
+            }
+
+            // Preselect the block in start/end ComboBoxes
+            PreselectRange(blockStart, blockEnd);
+
+            // Prepopulate SurfaceType and MapTreatment based on the first record in the block
+            var firstInBlock = fileRecords.FirstOrDefault(r => Math.Abs(r.MinOfChFrom - blockStart) < 0.001);
+            if (firstInBlock != null)
+            {
+                if (surfaceOptions.Contains(firstInBlock.SurfaceType))
+                    comboSurfaceType.SelectedItem = firstInBlock.SurfaceType;
+
+                if (surfaceOptions.Contains(firstInBlock.MapTreatment))
+                    comboMapTreatment.SelectedItem = firstInBlock.MapTreatment;
             }
         }
 
@@ -52,6 +66,57 @@ namespace ClassificationViewer
             Close();
         }
 
+        public void PreselectRange(double start, double end)
+        {
+            foreach (var item in comboStart.Items)
+            {
+                if (item is DistanceOption opt && Math.Abs(opt.Value - start) < 0.001)
+                {
+                    comboStart.SelectedItem = item;
+                    break;
+                }
+            }
+
+            foreach (var item in comboEnd.Items)
+            {
+                if (item is DistanceOption opt && Math.Abs(opt.Value - end) < 0.001)
+                {
+                    comboEnd.SelectedItem = item;
+                    break;
+                }
+            }
+        }
+
+        public static List<(double Start, double End, string Surface, string Treatment)> GetStrictBlocks(List<CsvRecord> records)
+        {
+            var blocks = new List<(double Start, double End, string Surface, string Treatment)>();
+            if (!records.Any()) return blocks;
+
+            double blockStart = records[0].MinOfChFrom;
+            double blockEnd = records[0].MaxOfChTo;
+            string surface = records[0].SurfaceType;
+            string treatment = records[0].MapTreatment;
+
+            foreach (var r in records.Skip(1))
+            {
+                if (r.SurfaceType == surface && r.MapTreatment == treatment)
+                {
+                    blockEnd = r.MaxOfChTo;
+                }
+                else
+                {
+                    blocks.Add((blockStart, blockEnd, surface, treatment));
+                    blockStart = r.MinOfChFrom;
+                    blockEnd = r.MaxOfChTo;
+                    surface = r.SurfaceType;
+                    treatment = r.MapTreatment;
+                }
+            }
+
+            blocks.Add((blockStart, blockEnd, surface, treatment));
+            return blocks;
+        }
+
         private class DistanceOption
         {
             public string Label { get; }
@@ -63,7 +128,10 @@ namespace ClassificationViewer
                 Value = value;
             }
 
-            public override string ToString() => Label;
+            public override string ToString()
+            {
+                return Label; // this will be shown in the ComboBox
+            }
         }
     }
 }

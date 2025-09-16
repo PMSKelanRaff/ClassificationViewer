@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             pictureBox1 = new PictureBox();
             btnPrevious = new Button();
             btnNext = new Button();
@@ -44,11 +45,17 @@
             comboSurfaceType = new ComboBox();
             btnSaveChanges = new Button();
             btnBulkUpdate = new Button();
+            timer1 = new System.Windows.Forms.Timer(components);
+            button1 = new Button();
+            button2 = new Button();
+            btnNextBlock = new Button();
+            btnPreviousBlock = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
             // 
+            pictureBox1.BackColor = SystemColors.ControlDark;
             pictureBox1.Location = new Point(12, 12);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(1033, 548);
@@ -142,7 +149,7 @@
             // 
             comboMapTreatment.FormattingEnabled = true;
             comboMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
-            comboMapTreatment.Location = new Point(439, 568);
+            comboMapTreatment.Location = new Point(439, 566);
             comboMapTreatment.Name = "comboMapTreatment";
             comboMapTreatment.Size = new Size(74, 23);
             comboMapTreatment.TabIndex = 10;
@@ -152,7 +159,7 @@
             // 
             comboSurfaceType.FormattingEnabled = true;
             comboSurfaceType.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
-            comboSurfaceType.Location = new Point(280, 568);
+            comboSurfaceType.Location = new Point(280, 567);
             comboSurfaceType.Name = "comboSurfaceType";
             comboSurfaceType.Size = new Size(64, 23);
             comboSurfaceType.TabIndex = 11;
@@ -160,30 +167,78 @@
             // 
             // btnSaveChanges
             // 
-            btnSaveChanges.Location = new Point(633, 568);
+            btnSaveChanges.Location = new Point(633, 566);
             btnSaveChanges.Name = "btnSaveChanges";
             btnSaveChanges.Size = new Size(88, 23);
             btnSaveChanges.TabIndex = 12;
-            btnSaveChanges.Text = "Update CSV";
+            btnSaveChanges.Text = "Save";
             btnSaveChanges.UseVisualStyleBackColor = true;
             btnSaveChanges.Click += btnSaveChanges_Click;
             // 
             // btnBulkUpdate
             // 
-            btnBulkUpdate.Location = new Point(519, 568);
+            btnBulkUpdate.Location = new Point(519, 566);
             btnBulkUpdate.Name = "btnBulkUpdate";
-            btnBulkUpdate.Size = new Size(75, 23);
+            btnBulkUpdate.Size = new Size(86, 23);
             btnBulkUpdate.TabIndex = 13;
-            btnBulkUpdate.Text = "Change All";
+            btnBulkUpdate.Text = "Block Update";
             btnBulkUpdate.UseVisualStyleBackColor = true;
             btnBulkUpdate.Click += btnBulkUpdate_Click;
+            // 
+            // timer1
+            // 
+            timer1.Tick += TestTimerTick;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(889, 595);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 14;
+            button1.Text = "Play";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += play_Click;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(808, 595);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 15;
+            button2.Text = "Pause";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += pause_Click;
+            // 
+            // btnNextBlock
+            // 
+            btnNextBlock.Location = new Point(970, 595);
+            btnNextBlock.Name = "btnNextBlock";
+            btnNextBlock.Size = new Size(75, 23);
+            btnNextBlock.TabIndex = 16;
+            btnNextBlock.Text = "Next Block";
+            btnNextBlock.UseVisualStyleBackColor = true;
+            btnNextBlock.Click += btnNextBlock_Click;
+            // 
+            // btnPreviousBlock
+            // 
+            btnPreviousBlock.Location = new Point(727, 595);
+            btnPreviousBlock.Name = "btnPreviousBlock";
+            btnPreviousBlock.Size = new Size(75, 23);
+            btnPreviousBlock.TabIndex = 17;
+            btnPreviousBlock.Text = "Prev Block";
+            btnPreviousBlock.UseVisualStyleBackColor = true;
+            btnPreviousBlock.Click += btnPreviousBlock_Click_1;
             // 
             // ClassificationViewerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
-            ClientSize = new Size(1057, 601);
+            ClientSize = new Size(1057, 622);
+            Controls.Add(btnPreviousBlock);
+            Controls.Add(btnNextBlock);
+            Controls.Add(button2);
+            Controls.Add(button1);
             Controls.Add(btnBulkUpdate);
             Controls.Add(btnSaveChanges);
             Controls.Add(comboSurfaceType);
@@ -222,5 +277,10 @@
         private ComboBox comboSurfaceType;
         private Button btnSaveChanges;
         private Button btnBulkUpdate;
+        private System.Windows.Forms.Timer timer1;
+        private Button button1;
+        private Button button2;
+        private Button btnNextBlock;
+        private Button btnPreviousBlock;
     }
 }
