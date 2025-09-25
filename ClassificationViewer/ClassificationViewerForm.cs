@@ -130,6 +130,9 @@ namespace ClassificationViewer
 
                     if (!string.IsNullOrEmpty(form.SelectedMapTreatment))
                         csvHelper.BulkUpdateMapTreatment(blockStart, blockEnd, form.SelectedMapTreatment);
+
+                    hasUnsavedChanges = true;
+                    btnSaveChanges.Enabled = true;
                 }
             }
         }
@@ -255,9 +258,15 @@ namespace ClassificationViewer
                 foreach (var r in matches)
                 {
                     r.SurfaceType = newValue;
+
                     // Update prediction_match if SurfaceType and MapTreatment match
-                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType)) ? "True" : "False";
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType))
+                        ? "True" : "False";
                 }
+
+                // Mark changes so Save button works again
+                hasUnsavedChanges = true;
+                btnSaveChanges.Enabled = true;
 
                 DisplayImage(); // redraw overlay
             }
@@ -269,18 +278,24 @@ namespace ClassificationViewer
             {
                 string newValue = comboMapTreatment.SelectedItem.ToString();
 
-                // Update only the MapTreatment of all rows that match this image
                 var matches = csvHelper.FindMatches(imageFiles[currentIndex]);
                 foreach (var r in matches)
                 {
                     r.MapTreatment = newValue;
+
                     // Update prediction_match if SurfaceType and MapTreatment match
-                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment)) ? "True" : "False";
+                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType))
+                        ? "True" : "False";
                 }
 
-                DisplayImage(); // redraw overlay
+                // Mark changes so Save button works again
+                hasUnsavedChanges = true;
+                btnSaveChanges.Enabled = true;
+
+                DisplayImage();
             }
         }
+
 
         private void TestTimerTick(object sender, EventArgs e)
         {
@@ -335,6 +350,7 @@ namespace ClassificationViewer
             // Fallback: just return current record
             return (current.MinOfChFrom, current.MaxOfChTo);
         }
+
 
         // Core navigation logic
         private void NavigateToBlock(bool next)

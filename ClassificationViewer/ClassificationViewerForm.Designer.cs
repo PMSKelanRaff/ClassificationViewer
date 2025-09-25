@@ -130,7 +130,7 @@
             // lbl_Model
             // 
             lbl_Model.AutoSize = true;
-            lbl_Model.Location = new Point(190, 566);
+            lbl_Model.Location = new Point(199, 570);
             lbl_Model.Name = "lbl_Model";
             lbl_Model.Size = new Size(84, 15);
             lbl_Model.TabIndex = 8;
@@ -139,7 +139,7 @@
             // lbl_Manual
             // 
             lbl_Manual.AutoSize = true;
-            lbl_Manual.Location = new Point(350, 567);
+            lbl_Manual.Location = new Point(199, 599);
             lbl_Manual.Name = "lbl_Manual";
             lbl_Manual.Size = new Size(93, 15);
             lbl_Manual.TabIndex = 9;
@@ -149,9 +149,9 @@
             // 
             comboMapTreatment.FormattingEnabled = true;
             comboMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
-            comboMapTreatment.Location = new Point(439, 566);
+            comboMapTreatment.Location = new Point(298, 596);
             comboMapTreatment.Name = "comboMapTreatment";
-            comboMapTreatment.Size = new Size(74, 23);
+            comboMapTreatment.Size = new Size(64, 23);
             comboMapTreatment.TabIndex = 10;
             comboMapTreatment.SelectedIndexChanged += comboMapTreatment_SelectedIndexChanged;
             // 
@@ -159,7 +159,7 @@
             // 
             comboSurfaceType.FormattingEnabled = true;
             comboSurfaceType.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
-            comboSurfaceType.Location = new Point(280, 567);
+            comboSurfaceType.Location = new Point(298, 566);
             comboSurfaceType.Name = "comboSurfaceType";
             comboSurfaceType.Size = new Size(64, 23);
             comboSurfaceType.TabIndex = 11;
@@ -167,7 +167,7 @@
             // 
             // btnSaveChanges
             // 
-            btnSaveChanges.Location = new Point(633, 566);
+            btnSaveChanges.Location = new Point(599, 565);
             btnSaveChanges.Name = "btnSaveChanges";
             btnSaveChanges.Size = new Size(88, 23);
             btnSaveChanges.TabIndex = 12;
@@ -177,7 +177,7 @@
             // 
             // btnBulkUpdate
             // 
-            btnBulkUpdate.Location = new Point(519, 566);
+            btnBulkUpdate.Location = new Point(507, 565);
             btnBulkUpdate.Name = "btnBulkUpdate";
             btnBulkUpdate.Size = new Size(86, 23);
             btnBulkUpdate.TabIndex = 13;

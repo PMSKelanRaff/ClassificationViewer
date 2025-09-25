@@ -1,0 +1,6 @@
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.exe
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.deps.json
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.runtimeconfig.json
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.pdb
+C:\Users\KelanRafferty\Desktop\Surface Classifier\CsvHelper.dll
