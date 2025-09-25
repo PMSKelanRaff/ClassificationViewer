@@ -60,7 +60,7 @@ namespace ClassificationViewer
                         var record = new CsvRecord
                         {
                             RID = parts[0],
-                            SU = parts[1],   // string to preserve original format
+                            SU = parts[1],
                             WE = parts[2],
                             Filename1 = parts[3],
                             ROW_folder = parts[4],
@@ -68,9 +68,11 @@ namespace ClassificationViewer
                             MaxOfChTo = double.TryParse(parts[6], NumberStyles.Any, CultureInfo.InvariantCulture, out var max) ? max : 0,
                             SurfaceType = parts[7],
                             MapTreatment = parts[8],
-                            PredictionMatch = parts[9],          // keep as string "True"/"False"
-                            ImagesFoundInRange = parts[10],      // keep as string "True"/"False"
-                            NumImagesInRange = int.TryParse(parts[11], out var n) ? n : 0
+                            PredictionMatch = parts[9],
+                            ImagesFoundInRange = parts[10],
+                            NumImagesInRange = int.TryParse(parts[11], out var n) ? n : 0,
+                            // ✅ Load extra column if exists
+                            SecondMapTreatment = (parts.Length > 12) ? parts[12] : "None"
                         };
 
                         records.Add(record); // <-- only add once
@@ -106,7 +108,8 @@ namespace ClassificationViewer
             using (var writer = new StreamWriter(outputPath, false, Encoding.UTF8))
             {
                 // Write header with commas
-                writer.WriteLine("RID,SU,WE,Filename1,ROW_folder,MinOfChFrom,MaxOfChTo,SurfaceType,MapTreatment,prediction_match,images_found_in_range,num_images_in_range");
+                // Write header with new column
+                writer.WriteLine("RID,SU,WE,Filename1,ROW_folder,MinOfChFrom,MaxOfChTo,SurfaceType,MapTreatment,prediction_match,images_found_in_range,num_images_in_range,SecondMapTreatment");
 
                 foreach (var record in records)
                 {
@@ -116,7 +119,7 @@ namespace ClassificationViewer
                         $"{record.MaxOfChTo.ToString("0.0##", CultureInfo.InvariantCulture)}," +
                         $"{record.SurfaceType},{record.MapTreatment}," +
                         $"{NormalizeBool(record.PredictionMatch)},{NormalizeBool(record.ImagesFoundInRange)}," +
-                        $"{record.NumImagesInRange}"
+                        $"{record.NumImagesInRange},{record.SecondMapTreatment ?? "None"}"
                     );
                 }
             }
@@ -179,6 +182,18 @@ namespace ClassificationViewer
                     r.MapTreatment = newMapTreatment;
                     // Optional: update prediction match
                     r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment)) ? "True" : "False";
+                }
+            }
+        }
+
+        public void BulkUpdateSecondMapTreatment(double startDistance, double endDistance, string newSecondTreatment)
+        {
+            foreach (var r in records)
+            {
+                // Only update records in the selected distance range
+                if (r.MinOfChFrom >= startDistance && r.MaxOfChTo <= endDistance)
+                {
+                    r.SecondMapTreatment = newSecondTreatment;
                 }
             }
         }

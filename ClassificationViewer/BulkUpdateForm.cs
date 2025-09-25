@@ -7,18 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ClassificationViewer
 {
     public partial class BulkUpdateForm : Form
     {
-        public BulkUpdateForm(string[] surfaceOptions, List<CsvRecord> fileRecords, double blockStart, double blockEnd)
+        private CsvHelperClass csvHelper;
+        public double StartDistance { get; private set; }
+        public double EndDistance { get; private set; }
+        public string SelectedSurfaceType { get; private set; }
+        public string SelectedMapTreatment { get; private set; }
+        public string SelectedSecondMapTreatment { get; private set; }   // NEW
+
+        public BulkUpdateForm(CsvHelperClass helper, string[] surfaceOptions, List<CsvRecord> fileRecords, double blockStart, double blockEnd)
         {
             InitializeComponent();
-
-            // Populate SurfaceType and MapTreatment choices
-            comboSurfaceType.Items.AddRange(surfaceOptions);
-            comboMapTreatment.Items.AddRange(surfaceOptions);
+            csvHelper = helper;
 
             // Populate start/end ComboBoxes with distances
             foreach (var r in fileRecords)
@@ -40,13 +45,11 @@ namespace ClassificationViewer
 
                 if (surfaceOptions.Contains(firstInBlock.MapTreatment))
                     comboMapTreatment.SelectedItem = firstInBlock.MapTreatment;
+
+                if (surfaceOptions.Contains(firstInBlock.SecondMapTreatment))
+                    comboSecondMapTreatment.SelectedItem = firstInBlock.SecondMapTreatment;
             }
         }
-
-        public double StartDistance { get; private set; }
-        public double EndDistance { get; private set; }
-        public string SelectedSurfaceType { get; private set; }
-        public string SelectedMapTreatment { get; private set; }
 
         private void btnApply_Click(object sender, EventArgs e)
         {
@@ -61,6 +64,11 @@ namespace ClassificationViewer
             EndDistance = endOpt.Value;
             SelectedSurfaceType = comboSurfaceType.SelectedItem?.ToString();
             SelectedMapTreatment = comboMapTreatment.SelectedItem?.ToString();
+            SelectedSecondMapTreatment = comboSecondMapTreatment.SelectedItem?.ToString(); // NEW
+
+            csvHelper.BulkUpdateSurfaceType(StartDistance, EndDistance, SelectedSurfaceType);
+            csvHelper.BulkUpdateMapTreatment(StartDistance, EndDistance, SelectedMapTreatment);
+            csvHelper.BulkUpdateSecondMapTreatment(StartDistance, EndDistance, SelectedSecondMapTreatment);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -87,33 +95,37 @@ namespace ClassificationViewer
             }
         }
 
-        public static List<(double Start, double End, string Surface, string Treatment)> GetStrictBlocks(List<CsvRecord> records)
+        public static List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>
+   GetStrictBlocks(List<CsvRecord> records)
         {
-            var blocks = new List<(double Start, double End, string Surface, string Treatment)>();
+            var blocks = new List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>();
             if (!records.Any()) return blocks;
 
             double blockStart = records[0].MinOfChFrom;
             double blockEnd = records[0].MaxOfChTo;
             string surface = records[0].SurfaceType;
             string treatment = records[0].MapTreatment;
+            string secondTreatment = records[0].SecondMapTreatment; // keep last-seen value, but don’t merge by it
 
             foreach (var r in records.Skip(1))
             {
+                // Only check surface + treatment for continuity
                 if (r.SurfaceType == surface && r.MapTreatment == treatment)
                 {
                     blockEnd = r.MaxOfChTo;
                 }
                 else
                 {
-                    blocks.Add((blockStart, blockEnd, surface, treatment));
+                    blocks.Add((blockStart, blockEnd, surface, treatment, secondTreatment));
                     blockStart = r.MinOfChFrom;
                     blockEnd = r.MaxOfChTo;
                     surface = r.SurfaceType;
                     treatment = r.MapTreatment;
+                    secondTreatment = r.SecondMapTreatment; // reset for new block
                 }
             }
 
-            blocks.Add((blockStart, blockEnd, surface, treatment));
+            blocks.Add((blockStart, blockEnd, surface, treatment, secondTreatment));
             return blocks;
         }
 

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClassificationViewer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1d2d9f8381ebd49f7799e22b42a1e3a7398f92c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d94159073bd99fe9676faad39d82046039640669")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClassificationViewer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClassificationViewer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

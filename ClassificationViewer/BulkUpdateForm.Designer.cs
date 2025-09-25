@@ -39,12 +39,14 @@
             btn_Cancel = new Button();
             comboStart = new ComboBox();
             comboEnd = new ComboBox();
+            comboSecondMapTreatment = new ComboBox();
+            label1 = new Label();
             SuspendLayout();
             // 
             // lblStart
             // 
             lblStart.AutoSize = true;
-            lblStart.Location = new Point(12, 61);
+            lblStart.Location = new Point(15, 50);
             lblStart.Name = "lblStart";
             lblStart.Size = new Size(41, 15);
             lblStart.TabIndex = 0;
@@ -53,7 +55,7 @@
             // lblEnd
             // 
             lblEnd.AutoSize = true;
-            lblEnd.Location = new Point(12, 99);
+            lblEnd.Location = new Point(15, 88);
             lblEnd.Name = "lblEnd";
             lblEnd.Size = new Size(26, 15);
             lblEnd.TabIndex = 1;
@@ -63,7 +65,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            label3.Location = new Point(90, 9);
+            label3.Location = new Point(162, 9);
             label3.Name = "label3";
             label3.Size = new Size(89, 21);
             label3.TabIndex = 4;
@@ -72,7 +74,8 @@
             // comboSurfaceType
             // 
             comboSurfaceType.FormattingEnabled = true;
-            comboSurfaceType.Location = new Point(289, 58);
+            comboSurfaceType.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
+            comboSurfaceType.Location = new Point(289, 44);
             comboSurfaceType.Name = "comboSurfaceType";
             comboSurfaceType.Size = new Size(121, 23);
             comboSurfaceType.TabIndex = 5;
@@ -80,7 +83,8 @@
             // comboMapTreatment
             // 
             comboMapTreatment.FormattingEnabled = true;
-            comboMapTreatment.Location = new Point(289, 96);
+            comboMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
+            comboMapTreatment.Location = new Point(289, 77);
             comboMapTreatment.Name = "comboMapTreatment";
             comboMapTreatment.Size = new Size(121, 23);
             comboMapTreatment.TabIndex = 6;
@@ -88,7 +92,7 @@
             // lblSurface
             // 
             lblSurface.AutoSize = true;
-            lblSurface.Location = new Point(227, 61);
+            lblSurface.Location = new Point(227, 47);
             lblSurface.Name = "lblSurface";
             lblSurface.Size = new Size(47, 15);
             lblSurface.TabIndex = 7;
@@ -97,7 +101,7 @@
             // lblMap
             // 
             lblMap.AutoSize = true;
-            lblMap.Location = new Point(227, 99);
+            lblMap.Location = new Point(227, 80);
             lblMap.Name = "lblMap";
             lblMap.Size = new Size(56, 15);
             lblMap.TabIndex = 8;
@@ -125,7 +129,7 @@
             // comboStart
             // 
             comboStart.FormattingEnabled = true;
-            comboStart.Location = new Point(59, 58);
+            comboStart.Location = new Point(62, 47);
             comboStart.Name = "comboStart";
             comboStart.Size = new Size(121, 23);
             comboStart.TabIndex = 11;
@@ -133,16 +137,36 @@
             // comboEnd
             // 
             comboEnd.FormattingEnabled = true;
-            comboEnd.Location = new Point(59, 99);
+            comboEnd.Location = new Point(61, 85);
             comboEnd.Name = "comboEnd";
             comboEnd.Size = new Size(121, 23);
             comboEnd.TabIndex = 12;
+            // 
+            // comboSecondMapTreatment
+            // 
+            comboSecondMapTreatment.FormattingEnabled = true;
+            comboSecondMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
+            comboSecondMapTreatment.Location = new Point(289, 112);
+            comboSecondMapTreatment.Name = "comboSecondMapTreatment";
+            comboSecondMapTreatment.Size = new Size(121, 23);
+            comboSecondMapTreatment.TabIndex = 13;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(218, 115);
+            label1.Name = "label1";
+            label1.Size = new Size(65, 15);
+            label1.TabIndex = 14;
+            label1.Text = "Manual 2 : ";
             // 
             // BulkUpdateForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(430, 177);
+            Controls.Add(label1);
+            Controls.Add(comboSecondMapTreatment);
             Controls.Add(comboEnd);
             Controls.Add(comboStart);
             Controls.Add(btn_Cancel);
@@ -173,5 +197,7 @@
         private Button btn_Cancel;
         private ComboBox comboStart;
         private ComboBox comboEnd;
+        private ComboBox comboSecondMapTreatment;
+        private Label label1;
     }
 }

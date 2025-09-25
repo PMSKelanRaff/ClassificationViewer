@@ -50,6 +50,8 @@
             button2 = new Button();
             btnNextBlock = new Button();
             btnPreviousBlock = new Button();
+            label1 = new Label();
+            comboSecondMapTreatment = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -167,9 +169,9 @@
             // 
             // btnSaveChanges
             // 
-            btnSaveChanges.Location = new Point(599, 565);
+            btnSaveChanges.Location = new Point(631, 566);
             btnSaveChanges.Name = "btnSaveChanges";
-            btnSaveChanges.Size = new Size(88, 23);
+            btnSaveChanges.Size = new Size(62, 23);
             btnSaveChanges.TabIndex = 12;
             btnSaveChanges.Text = "Save";
             btnSaveChanges.UseVisualStyleBackColor = true;
@@ -177,7 +179,7 @@
             // 
             // btnBulkUpdate
             // 
-            btnBulkUpdate.Location = new Point(507, 565);
+            btnBulkUpdate.Location = new Point(539, 566);
             btnBulkUpdate.Name = "btnBulkUpdate";
             btnBulkUpdate.Size = new Size(86, 23);
             btnBulkUpdate.TabIndex = 13;
@@ -229,12 +231,33 @@
             btnPreviousBlock.UseVisualStyleBackColor = true;
             btnPreviousBlock.Click += btnPreviousBlock_Click_1;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(368, 570);
+            label1.Name = "label1";
+            label1.Size = new Size(102, 15);
+            label1.TabIndex = 18;
+            label1.Text = "Manual Rating 2 : ";
+            // 
+            // comboSecondMapTreatment
+            // 
+            comboSecondMapTreatment.FormattingEnabled = true;
+            comboSecondMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
+            comboSecondMapTreatment.Location = new Point(469, 566);
+            comboSecondMapTreatment.Name = "comboSecondMapTreatment";
+            comboSecondMapTreatment.Size = new Size(64, 23);
+            comboSecondMapTreatment.TabIndex = 19;
+            comboSecondMapTreatment.SelectedIndexChanged += comboSecondMapTreatment_SelectedIndexChanged;
+            // 
             // ClassificationViewerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(1057, 622);
+            Controls.Add(comboSecondMapTreatment);
+            Controls.Add(label1);
             Controls.Add(btnPreviousBlock);
             Controls.Add(btnNextBlock);
             Controls.Add(button2);
@@ -282,5 +305,7 @@
         private Button button2;
         private Button btnNextBlock;
         private Button btnPreviousBlock;
+        private Label label1;
+        private ComboBox comboSecondMapTreatment;
     }
 }

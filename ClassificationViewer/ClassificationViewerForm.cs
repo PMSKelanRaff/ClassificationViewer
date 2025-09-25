@@ -115,7 +115,7 @@ namespace ClassificationViewer
             // You could even let the user pick with a toggle.
             var (start, end) = FindBlockForCurrentRecord(currentMatch);
 
-            using (var form = new BulkUpdateForm(surfaceOptions, fileRecords, start, end))
+            using (var form = new BulkUpdateForm(csvHelper, surfaceOptions, fileRecords, start, end))
             {
                 // Preselect defaults in the form
                 form.PreselectRange(start, end);
@@ -217,6 +217,7 @@ namespace ClassificationViewer
                 {
                     string surface = comboSurfaceType.SelectedItem?.ToString() ?? currentMatch.SurfaceType;
                     string manual = comboMapTreatment.SelectedItem?.ToString() ?? currentMatch.MapTreatment;
+                    string extra = currentMatch?.SecondMapTreatment ?? "None";
 
                     lines = new string[]
                     {
@@ -224,6 +225,11 @@ namespace ClassificationViewer
                 $"Model : {surface}",
                 $"Manual : {manual}"
                     };
+                    // Add third line only if not None
+                    if (!string.IsNullOrEmpty(extra) && extra != "None")
+                    {
+                        lines = lines.Concat(new string[] { $"Manual 2 : {extra}" }).ToArray();
+                    }
                 }
                 else
                 {
@@ -296,6 +302,23 @@ namespace ClassificationViewer
             }
         }
 
+        private void comboSecondMapTreatment_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (currentMatch != null && comboSecondMapTreatment.SelectedItem != null)
+            {
+                string newValue = comboSecondMapTreatment.SelectedItem.ToString();
+
+                var matches = csvHelper.FindMatches(imageFiles[currentIndex]);
+                foreach (var r in matches)
+                {
+                    r.SecondMapTreatment = newValue;
+                }
+
+                hasUnsavedChanges = true;
+                btnSaveChanges.Enabled = true;
+                DisplayImage();
+            }
+        }
 
         private void TestTimerTick(object sender, EventArgs e)
         {

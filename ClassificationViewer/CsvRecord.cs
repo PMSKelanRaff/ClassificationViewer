@@ -20,5 +20,8 @@ namespace ClassificationViewer
         public string? PredictionMatch { get; set; }
         public string? ImagesFoundInRange { get; set; }
         public int NumImagesInRange { get; set; }
+
+        // NEW
+        public string? SecondMapTreatment { get; set; } = "None";  // third combobox
     }
 }
