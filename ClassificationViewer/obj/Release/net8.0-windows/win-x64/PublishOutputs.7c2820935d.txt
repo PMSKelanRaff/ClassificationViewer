@@ -1,0 +1,7 @@
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.pdb
+C:\Users\KelanRafferty\Desktop\Surface Classifier\D3DCompiler_47_cor3.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\PenImc_cor3.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\PresentationNative_cor3.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\vcruntime140_cor3.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\wpfgfx_cor3.dll
+C:\Users\KelanRafferty\Desktop\Surface Classifier\ClassificationViewer.exe
