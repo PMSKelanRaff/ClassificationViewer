@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BulkUpdateForm));
             lblStart = new Label();
             lblEnd = new Label();
             label3 = new Label();
@@ -178,8 +179,10 @@
             Controls.Add(label3);
             Controls.Add(lblEnd);
             Controls.Add(lblStart);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "BulkUpdateForm";
             Text = "BulkUpdateForm";
+            Load += BulkUpdateForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }

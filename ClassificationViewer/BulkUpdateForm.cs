@@ -145,5 +145,10 @@ namespace ClassificationViewer
                 return Label; // this will be shown in the ComboBox
             }
         }
+
+        private void BulkUpdateForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

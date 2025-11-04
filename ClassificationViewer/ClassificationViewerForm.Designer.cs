@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClassificationViewerForm));
             pictureBox1 = new PictureBox();
             btnPrevious = new Button();
             btnNext = new Button();
@@ -57,6 +58,7 @@
             // 
             // pictureBox1
             // 
+            pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pictureBox1.BackColor = SystemColors.ControlDark;
             pictureBox1.Location = new Point(12, 12);
             pictureBox1.Name = "pictureBox1";
@@ -67,6 +69,7 @@
             // 
             // btnPrevious
             // 
+            btnPrevious.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnPrevious.Location = new Point(808, 566);
             btnPrevious.Name = "btnPrevious";
             btnPrevious.Size = new Size(75, 23);
@@ -77,6 +80,7 @@
             // 
             // btnNext
             // 
+            btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnNext.Location = new Point(889, 566);
             btnNext.Name = "btnNext";
             btnNext.Size = new Size(75, 23);
@@ -91,6 +95,7 @@
             // 
             // btnSelectFolder
             // 
+            btnSelectFolder.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnSelectFolder.Location = new Point(12, 567);
             btnSelectFolder.Name = "btnSelectFolder";
             btnSelectFolder.Size = new Size(91, 23);
@@ -101,6 +106,7 @@
             // 
             // btnSelectCSV
             // 
+            btnSelectCSV.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnSelectCSV.Location = new Point(109, 567);
             btnSelectCSV.Name = "btnSelectCSV";
             btnSelectCSV.Size = new Size(75, 23);
@@ -111,6 +117,7 @@
             // 
             // btnBigNext
             // 
+            btnBigNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnBigNext.Location = new Point(970, 566);
             btnBigNext.Name = "btnBigNext";
             btnBigNext.Size = new Size(75, 23);
@@ -121,6 +128,7 @@
             // 
             // btnBigPrevious
             // 
+            btnBigPrevious.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnBigPrevious.Location = new Point(727, 566);
             btnBigPrevious.Name = "btnBigPrevious";
             btnBigPrevious.Size = new Size(75, 23);
@@ -131,6 +139,7 @@
             // 
             // lbl_Model
             // 
+            lbl_Model.Anchor = AnchorStyles.Bottom;
             lbl_Model.AutoSize = true;
             lbl_Model.Location = new Point(199, 570);
             lbl_Model.Name = "lbl_Model";
@@ -140,6 +149,7 @@
             // 
             // lbl_Manual
             // 
+            lbl_Manual.Anchor = AnchorStyles.Bottom;
             lbl_Manual.AutoSize = true;
             lbl_Manual.Location = new Point(199, 599);
             lbl_Manual.Name = "lbl_Manual";
@@ -149,6 +159,7 @@
             // 
             // comboMapTreatment
             // 
+            comboMapTreatment.Anchor = AnchorStyles.Bottom;
             comboMapTreatment.FormattingEnabled = true;
             comboMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
             comboMapTreatment.Location = new Point(298, 596);
@@ -159,6 +170,7 @@
             // 
             // comboSurfaceType
             // 
+            comboSurfaceType.Anchor = AnchorStyles.Bottom;
             comboSurfaceType.FormattingEnabled = true;
             comboSurfaceType.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
             comboSurfaceType.Location = new Point(298, 566);
@@ -169,6 +181,7 @@
             // 
             // btnSaveChanges
             // 
+            btnSaveChanges.Anchor = AnchorStyles.Bottom;
             btnSaveChanges.Location = new Point(631, 566);
             btnSaveChanges.Name = "btnSaveChanges";
             btnSaveChanges.Size = new Size(62, 23);
@@ -179,6 +192,7 @@
             // 
             // btnBulkUpdate
             // 
+            btnBulkUpdate.Anchor = AnchorStyles.Bottom;
             btnBulkUpdate.Location = new Point(539, 566);
             btnBulkUpdate.Name = "btnBulkUpdate";
             btnBulkUpdate.Size = new Size(86, 23);
@@ -193,6 +207,7 @@
             // 
             // button1
             // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             button1.Location = new Point(889, 595);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
@@ -203,6 +218,7 @@
             // 
             // button2
             // 
+            button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             button2.Location = new Point(808, 595);
             button2.Name = "button2";
             button2.Size = new Size(75, 23);
@@ -213,6 +229,7 @@
             // 
             // btnNextBlock
             // 
+            btnNextBlock.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnNextBlock.Location = new Point(970, 595);
             btnNextBlock.Name = "btnNextBlock";
             btnNextBlock.Size = new Size(75, 23);
@@ -223,6 +240,7 @@
             // 
             // btnPreviousBlock
             // 
+            btnPreviousBlock.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnPreviousBlock.Location = new Point(727, 595);
             btnPreviousBlock.Name = "btnPreviousBlock";
             btnPreviousBlock.Size = new Size(75, 23);
@@ -233,6 +251,7 @@
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Bottom;
             label1.AutoSize = true;
             label1.Location = new Point(368, 570);
             label1.Name = "label1";
@@ -242,6 +261,7 @@
             // 
             // comboSecondMapTreatment
             // 
+            comboSecondMapTreatment.Anchor = AnchorStyles.Bottom;
             comboSecondMapTreatment.FormattingEnabled = true;
             comboSecondMapTreatment.Items.AddRange(new object[] { "HRA", "SMA", "SD", "HFS", "Concrete", "Unknown", "Ramps" });
             comboSecondMapTreatment.Location = new Point(469, 566);
@@ -275,6 +295,7 @@
             Controls.Add(btnNext);
             Controls.Add(btnPrevious);
             Controls.Add(pictureBox1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ClassificationViewerForm";
             Text = "Classification Viewer Form";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
