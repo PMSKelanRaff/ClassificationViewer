@@ -1,4 +1,4 @@
-namespace ClassificationViewer
+namespace ClassificationViewer.Classes
 {
     internal static class Program
     {

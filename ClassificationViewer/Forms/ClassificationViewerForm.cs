@@ -1,10 +1,12 @@
 using System.Globalization;
+using ClassificationViewer.Classes;
 using CsvHelper;
 
 namespace ClassificationViewer
 {
     public partial class ClassificationViewerForm : Form
     {
+        // Current folder & image
         private List<string> imageFiles = new List<string>();
         private int currentIndex = 0;
         private CsvHelperClass csvHelper = new CsvHelperClass();
@@ -14,9 +16,9 @@ namespace ClassificationViewer
         private CsvRecord currentMatch;
         private bool hasUnsavedChanges = false;
 
-        //block navigation
+        // Block navigation
         private int currentBlockIndex = 0;
-        private List<(double Start, double End, string Surface, string Treatment)> fileBlocks;
+        private List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)> currentBlocks;
 
 
         public ClassificationViewerForm()
@@ -65,28 +67,123 @@ namespace ClassificationViewer
         private void btnNext_Click(object sender, EventArgs e)
         {
             if (imageFiles.Count == 0) return;
-            currentIndex = (currentIndex + 1) % imageFiles.Count;
-            DisplayImage();
-        }
 
-        private void btnBigNext_Click(object sender, EventArgs e)
-        {
-            if (imageFiles.Count == 0) return;
-            currentIndex = (currentIndex + 100) % imageFiles.Count;
+            currentIndex++;
+
+            if (currentIndex >= imageFiles.Count)
+            {
+                // End of current dataset
+                if (currentDataSetIndex + 1 < surveyDataSets.Count)
+                {
+                    var result = MessageBox.Show(
+                        "End of dataset reached. Load next dataset?",
+                        "Next Dataset",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        currentDataSetIndex++;
+                        ActivateDataSet(currentDataSetIndex);
+                        return;
+                    }
+                }
+
+                currentIndex = imageFiles.Count - 1; // stay on last image
+            }
+
             DisplayImage();
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
             if (imageFiles.Count == 0) return;
-            currentIndex = (currentIndex - 1 + imageFiles.Count) % imageFiles.Count;
+
+            currentIndex--;
+
+            if (currentIndex < 0)
+            {
+                if (currentDataSetIndex > 0)
+                {
+                    var result = MessageBox.Show(
+                        "Beginning of dataset reached. Load previous dataset?",
+                        "Previous Dataset",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        currentDataSetIndex--;
+                        ActivateDataSet(currentDataSetIndex);
+                        currentIndex = 0; // start at first image of previous dataset
+                        return;
+                    }
+                }
+
+                currentIndex = 0; // stay at first image
+            }
+
+            DisplayImage();
+        }
+
+        private void btnBigNext_Click(object sender, EventArgs e)
+        {
+            if (imageFiles.Count == 0) return;
+
+            currentIndex += 100;
+
+            if (currentIndex >= imageFiles.Count)
+            {
+                if (currentDataSetIndex + 1 < surveyDataSets.Count)
+                {
+                    var result = MessageBox.Show(
+                        "End of dataset reached. Load next dataset?",
+                        "Next Dataset",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        currentDataSetIndex++;
+                        ActivateDataSet(currentDataSetIndex);
+                        return;
+                    }
+                }
+
+                currentIndex = imageFiles.Count - 1;
+            }
+
             DisplayImage();
         }
 
         private void btnBigPrevious_Click(object sender, EventArgs e)
         {
             if (imageFiles.Count == 0) return;
-            currentIndex = (currentIndex - 100 + imageFiles.Count) % imageFiles.Count;
+
+            currentIndex -= 100;
+
+            if (currentIndex < 0)
+            {
+                if (currentDataSetIndex > 0)
+                {
+                    var result = MessageBox.Show(
+                        "Beginning of dataset reached. Load previous dataset?",
+                        "Previous Dataset",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        currentDataSetIndex--;
+                        ActivateDataSet(currentDataSetIndex);
+                        currentIndex = 0;
+                        return;
+                    }
+                }
+
+                currentIndex = 0;
+            }
+
             DisplayImage();
         }
 
@@ -149,14 +246,19 @@ namespace ClassificationViewer
 
         private void btnNextBlock_Click(object sender, EventArgs e)
         {
-            NavigateToBlock(next: true);
+            NavigateToNextBlock();
         }
 
-        private void btnPreviousBlock_Click_1(object sender, EventArgs e)
+        private void btnPreviousBlock_Click(object sender, EventArgs e)
         {
-            NavigateToBlock(next: false);
+            NavigateToPreviousBlock();
         }
 
+        private void BtnLoadPredefined_Click(object sender, EventArgs e)
+        {
+            SetPredefinedFoldersAndCsvs();
+            InitializeDataSets();
+        }
 
 
         //Events
@@ -376,62 +478,114 @@ namespace ClassificationViewer
 
 
         // Core navigation logic
-        private void NavigateToBlock(bool next)
+
+        private void LoadBlocksForCurrentFolder()
         {
             if (imageFiles.Count == 0) return;
 
-            double? currentDistance = GetDistanceFromFilename(imageFiles[currentIndex]);
-            if (currentDistance == null) return;
-
-            // Extract base filename for CSV match
-            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0];
-
+            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[0]).Split(' ')[0];
             var fileRecords = csvHelper.Records
                 .Where(r => r.Filename1 == currentFile)
                 .OrderBy(r => r.MinOfChFrom)
                 .ToList();
 
-            if (!fileRecords.Any()) return;
+            currentBlocks = BulkUpdateForm.GetStrictBlocks(fileRecords);
+            currentBlockIndex = 0;
 
-            var blocks = BulkUpdateForm.GetStrictBlocks(fileRecords);
-            if (blocks.Count == 0) return;
-
-            int blockIndex = blocks.FindIndex(b => currentDistance >= b.Start && currentDistance <= b.End);
-
-            if (blockIndex == -1)
+            // Move to first image of first block
+            if (currentBlocks.Count > 0)
             {
-                blockIndex = next ? -1 : blocks.Count;
+                var firstBlock = currentBlocks[0];
+                currentIndex = imageFiles.FindIndex(f =>
+                {
+                    double? d = GetDistanceFromFilename(f);
+                    return d != null && d >= firstBlock.Start && d <= firstBlock.End;
+                });
+                DisplayImage();
             }
+        }
 
-            int targetIndex = next ? blockIndex + 1 : blockIndex - 1;
+        private void NavigateToNextBlock()
+        {
+            if (currentBlocks == null || currentBlocks.Count == 0) return;
 
-            if (targetIndex < 0 || targetIndex >= blocks.Count)
+            currentBlockIndex++;
+
+            if (currentBlockIndex >= currentBlocks.Count)
             {
-                MessageBox.Show(next ? "No next block found." : "No previous block found.");
+                // Move to next dataset
+                if (currentDataSetIndex + 1 < surveyDataSets.Count)
+                {
+                    currentDataSetIndex++;
+                    ActivateDataSet(currentDataSetIndex);
+
+                    // Start at first block of new dataset
+                    currentBlockIndex = 0;
+                    MoveToBlock(currentBlockIndex);
+                }
+                else
+                {
+                    // Stay on last block of last dataset
+                    currentBlockIndex = currentBlocks.Count - 1;
+                }
+
                 return;
             }
 
-            var targetBlock = blocks[targetIndex];
+            MoveToBlock(currentBlockIndex);
+        }
 
-            double tolerance = 0.0001;
-            var nextIndex = imageFiles.FindIndex(f =>
+        private void NavigateToPreviousBlock()
+        {
+            if (currentBlocks == null || currentBlocks.Count == 0) return;
+
+            currentBlockIndex--;
+
+            if (currentBlockIndex < 0)
             {
-                double? dist = GetDistanceFromFilename(f);
-                return dist != null && dist + tolerance >= targetBlock.Start && dist - tolerance <= targetBlock.End;
+                // Move to previous dataset
+                if (currentDataSetIndex > 0)
+                {
+                    currentDataSetIndex--;
+                    ActivateDataSet(currentDataSetIndex);
+
+                    // Start at last block of previous dataset
+                    currentBlockIndex = currentBlocks.Count - 1;
+                    MoveToBlock(currentBlockIndex);
+                }
+                else
+                {
+                    // Stay on first block of first dataset
+                    currentBlockIndex = 0;
+                }
+
+                return;
+            }
+
+            MoveToBlock(currentBlockIndex);
+        }
+
+
+        private void MoveToBlock(int blockIndex)
+        {
+            if (currentBlocks == null || blockIndex < 0 || blockIndex >= currentBlocks.Count) return;
+
+            var block = currentBlocks[blockIndex];
+            currentIndex = imageFiles.FindIndex(f =>
+            {
+                double? d = GetDistanceFromFilename(f);
+                return d != null && d >= block.Start && d <= block.End;
             });
 
-            if (nextIndex >= 0)
-            {
-                currentIndex = nextIndex;
-                // Update currentMatch if CSV exists
-                currentMatch = fileRecords.FirstOrDefault(r =>
-                    Math.Abs(r.MinOfChFrom - targetBlock.Start) < 0.001);
-                DisplayImage(); // refresh PictureBox
-            }
-            else
-            {
-                MessageBox.Show("No image found for the target block.");
-            }
+            // Update CSV match for overlay
+            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0];
+            var fileRecords = csvHelper.Records
+                .Where(r => r.Filename1 == currentFile)
+                .OrderBy(r => r.MinOfChFrom)
+                .ToList();
+            currentMatch = fileRecords.FirstOrDefault(r => Math.Abs(r.MinOfChFrom - block.Start) < 0.001);
+
+            DisplayImage();
         }
 
         private double? GetDistanceFromFilename(string imageFile)
@@ -444,6 +598,111 @@ namespace ClassificationViewer
                 return distance;
 
             return null;
+        }
+
+        //preloading datasets
+        private List<SurveyDataSet> surveyDataSets = new List<SurveyDataSet>();
+        private int currentDataSetIndex = 0; // which dataset is active
+        private int currentImageIndex = 0;   // which image in current dataset
+
+        private string[] predefinedFolders;
+        private string csvFolder;
+        private string[] csvFiles;
+
+        private void SetPredefinedFoldersAndCsvs()
+        {
+            predefinedFolders = new string[]
+            {
+        @"\\PQ05758\2024-Backup\RSP Imagery 2024\WE20240608\N51D224A\N51D224A_ROW",
+        @"\\PQ05758\2024-Backup\RSP Imagery 2024\WE20240615\N52D124B\N52D124B_ROW",
+        @"\\PQ05758\2024-Backup\RSP Imagery 2024\WE20240831\N73D224A\N73D224A_ROW",
+        @"\\PQ05758\2024-Backup\RSP Imagery 2024\WE20240914\N54D124A\N54D124A_ROW",
+        @"\\PQ05758\2024-Backup\RSP Imagery 2024\WE20240615\N55D224A\N55D224A_ROW"
+            };
+
+            csvFolder = @"R:\David P\Training\Kelan\Surface Classification Editor 2.0\Data\CSV";
+            csvFiles = Directory.Exists(csvFolder) ? Directory.GetFiles(csvFolder, "*.csv") : Array.Empty<string>();
+        }
+
+        private void InitializeDataSets()
+        {
+            surveyDataSets.Clear();
+
+            string csvFolder = @"R:\David P\Training\Kelan\Surface Classification Editor 2.0\Data\CSV";
+            if (!Directory.Exists(csvFolder))
+            {
+                MessageBox.Show($"CSV folder not found: {csvFolder}");
+                return;
+            }
+
+            string[] csvFiles = Directory.GetFiles(csvFolder, "*.csv");
+            if (csvFiles.Length == 0)
+            {
+                MessageBox.Show("No CSV files found.");
+                return;
+            }
+
+            foreach (var csvPath in csvFiles)
+            {
+                var csvData = new CsvHelperClass();
+                csvData.LoadCsv(csvPath);
+
+                // Get all unique folders from this CSV
+                var foldersInCsv = csvData.Records
+                                          .Select(r => r.ROW_folder)
+                                          .Distinct()
+                                          .Where(f => !string.IsNullOrEmpty(f))
+                                          .ToList();
+
+                foreach (var folder in foldersInCsv)
+                {
+                    if (!Directory.Exists(folder))
+                    {
+                        Console.WriteLine($"Skipping missing folder: {folder}");
+                        continue;
+                    }
+
+                    // Get all images in this folder
+                    var images = Directory.GetFiles(folder, "*.JPG")
+                                          .Concat(Directory.GetFiles(folder, "*.PNG"))
+                                          .OrderBy(f => f)
+                                          .ToList();
+
+                    if (images.Count == 0)
+                    {
+                        Console.WriteLine($"No images found in folder: {folder}");
+                        continue;
+                    }
+
+                    surveyDataSets.Add(new SurveyDataSet(folder, csvPath)
+                    {
+                        ImageFiles = images
+                    });
+
+                    Console.WriteLine($"Loaded {images.Count} images + {csvData.Records.Count} CSV records from {Path.GetFileName(folder)}");
+                }
+            }
+
+            if (surveyDataSets.Count > 0)
+                ActivateDataSet(0);
+            else
+                MessageBox.Show("No datasets loaded!");
+        }
+
+        private void ActivateDataSet(int index)
+        {
+            if (index < 0 || index >= surveyDataSets.Count) return;
+
+            currentDataSetIndex = index;
+            currentImageIndex = 0;
+
+            var set = surveyDataSets[index];
+            imageFiles = set.ImageFiles;
+            csvHelper = set.CsvData;
+
+            LoadBlocksForCurrentFolder(); // your existing method
+
+            MessageBox.Show($"Loaded dataset {index + 1}/{surveyDataSets.Count}\nFolder: {Path.GetFileName(set.Folder)}\nCSV: {Path.GetFileName(set.CsvPath)}");
         }
 
     }

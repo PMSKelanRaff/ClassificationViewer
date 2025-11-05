@@ -4,9 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using ClassificationViewer;
 
-namespace ClassificationViewer
+namespace ClassificationViewer.Classes
 {
     public class CsvHelperClass
     {
@@ -72,7 +71,7 @@ namespace ClassificationViewer
                             ImagesFoundInRange = parts[10],
                             NumImagesInRange = int.TryParse(parts[11], out var n) ? n : 0,
                             // ✅ Load extra column if exists
-                            SecondMapTreatment = (parts.Length > 12) ? parts[12] : "None"
+                            SecondMapTreatment = parts.Length > 12 ? parts[12] : "None"
                         };
 
                         records.Add(record); // <-- only add once
@@ -130,21 +129,21 @@ namespace ClassificationViewer
         private string NormalizeBool(string? value)
         {
             if (string.IsNullOrWhiteSpace(value)) return "False";
-            return (value.Trim().Equals("True", StringComparison.OrdinalIgnoreCase)) ? "True" : "False";
+            return value.Trim().Equals("True", StringComparison.OrdinalIgnoreCase) ? "True" : "False";
         }
 
         public List<CsvRecord> FindMatches(string imageFile)
         {
             double? distance = GetDistanceFromFilename(imageFile);
+            if (distance == null) return new List<CsvRecord>();
 
-            if (distance == null)
-                return new List<CsvRecord>();
+            string imageFolder = Path.GetDirectoryName(imageFile) ?? "";
 
             return records
                 .Where(r => !string.IsNullOrEmpty(r.ROW_folder)
-                            && imageFile.StartsWith(r.ROW_folder, StringComparison.OrdinalIgnoreCase)
+                            && string.Equals(r.ROW_folder.TrimEnd('\\'), imageFolder.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)
                             && distance >= r.MinOfChFrom
-                            && distance <= r.MaxOfChTo)
+                            && distance < r.MaxOfChTo) // Upper bound exclusive
                 .ToList();
         }
 
@@ -168,7 +167,7 @@ namespace ClassificationViewer
                 {
                     r.SurfaceType = newSurfaceType;
                     // Optional: update prediction match if desired
-                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType)) ? "True" : "False";
+                    r.PredictionMatch = r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType) ? "True" : "False";
                 }
             }
         }
@@ -181,7 +180,7 @@ namespace ClassificationViewer
                 {
                     r.MapTreatment = newMapTreatment;
                     // Optional: update prediction match
-                    r.PredictionMatch = (r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment)) ? "True" : "False";
+                    r.PredictionMatch = r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.MapTreatment) ? "True" : "False";
                 }
             }
         }

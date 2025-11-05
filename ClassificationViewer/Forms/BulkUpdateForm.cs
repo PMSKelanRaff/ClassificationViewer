@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClassificationViewer.Classes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ClassificationViewer
@@ -96,7 +97,7 @@ namespace ClassificationViewer
         }
 
         public static List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>
-   GetStrictBlocks(List<CsvRecord> records)
+        GetStrictBlocks(List<CsvRecord> records)
         {
             var blocks = new List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>();
             if (!records.Any()) return blocks;

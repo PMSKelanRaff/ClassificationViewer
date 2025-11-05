@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassificationViewer
+namespace ClassificationViewer.Classes
 {
     public class CsvRecord
     {

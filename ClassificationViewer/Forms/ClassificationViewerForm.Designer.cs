@@ -53,6 +53,7 @@
             btnPreviousBlock = new Button();
             label1 = new Label();
             comboSecondMapTreatment = new ComboBox();
+            btnLoadPredefined = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -247,7 +248,7 @@
             btnPreviousBlock.TabIndex = 17;
             btnPreviousBlock.Text = "Prev Block";
             btnPreviousBlock.UseVisualStyleBackColor = true;
-            btnPreviousBlock.Click += btnPreviousBlock_Click_1;
+            btnPreviousBlock.Click += btnPreviousBlock_Click;
             // 
             // label1
             // 
@@ -270,12 +271,23 @@
             comboSecondMapTreatment.TabIndex = 19;
             comboSecondMapTreatment.SelectedIndexChanged += comboSecondMapTreatment_SelectedIndexChanged;
             // 
+            // btnLoadPredefined
+            // 
+            btnLoadPredefined.Location = new Point(12, 595);
+            btnLoadPredefined.Name = "btnLoadPredefined";
+            btnLoadPredefined.Size = new Size(172, 23);
+            btnLoadPredefined.TabIndex = 20;
+            btnLoadPredefined.Text = "Load Predefined Options";
+            btnLoadPredefined.UseVisualStyleBackColor = true;
+            btnLoadPredefined.Click += BtnLoadPredefined_Click;
+            // 
             // ClassificationViewerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(1057, 622);
+            Controls.Add(btnLoadPredefined);
             Controls.Add(comboSecondMapTreatment);
             Controls.Add(label1);
             Controls.Add(btnPreviousBlock);
@@ -328,5 +340,6 @@
         private Button btnPreviousBlock;
         private Label label1;
         private ComboBox comboSecondMapTreatment;
+        private Button btnLoadPredefined;
     }
 }
