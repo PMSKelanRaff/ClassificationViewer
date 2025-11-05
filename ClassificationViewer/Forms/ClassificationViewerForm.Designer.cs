@@ -36,8 +36,7 @@
             folderBrowserDialog1 = new FolderBrowserDialog();
             folderBrowserDialog2 = new FolderBrowserDialog();
             openFileDialog1 = new OpenFileDialog();
-            btnSelectFolder = new Button();
-            btnSelectCSV = new Button();
+            btnSelectCsvAndFolder = new Button();
             btnBigNext = new Button();
             btnBigPrevious = new Button();
             lbl_Model = new Label();
@@ -94,27 +93,16 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnSelectFolder
+            // btnSelectCsvAndFolder
             // 
-            btnSelectFolder.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnSelectFolder.Location = new Point(12, 567);
-            btnSelectFolder.Name = "btnSelectFolder";
-            btnSelectFolder.Size = new Size(91, 23);
-            btnSelectFolder.TabIndex = 3;
-            btnSelectFolder.Text = "Select Folder";
-            btnSelectFolder.UseVisualStyleBackColor = true;
-            btnSelectFolder.Click += btnSelectFolder_Click;
-            // 
-            // btnSelectCSV
-            // 
-            btnSelectCSV.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnSelectCSV.Location = new Point(109, 567);
-            btnSelectCSV.Name = "btnSelectCSV";
-            btnSelectCSV.Size = new Size(75, 23);
-            btnSelectCSV.TabIndex = 4;
-            btnSelectCSV.Text = "Select CSV";
-            btnSelectCSV.UseVisualStyleBackColor = true;
-            btnSelectCSV.Click += btnSelectCsv_Click;
+            btnSelectCsvAndFolder.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSelectCsvAndFolder.Location = new Point(12, 567);
+            btnSelectCsvAndFolder.Name = "btnSelectCsvAndFolder";
+            btnSelectCsvAndFolder.Size = new Size(172, 23);
+            btnSelectCsvAndFolder.TabIndex = 4;
+            btnSelectCsvAndFolder.Text = "Load Specific CSV";
+            btnSelectCsvAndFolder.UseVisualStyleBackColor = true;
+            btnSelectCsvAndFolder.Click += btnSelectCsvAndFolder_Click;
             // 
             // btnBigNext
             // 
@@ -142,7 +130,7 @@
             // 
             lbl_Model.Anchor = AnchorStyles.Bottom;
             lbl_Model.AutoSize = true;
-            lbl_Model.Location = new Point(199, 570);
+            lbl_Model.Location = new Point(208, 570);
             lbl_Model.Name = "lbl_Model";
             lbl_Model.Size = new Size(84, 15);
             lbl_Model.TabIndex = 8;
@@ -254,11 +242,11 @@
             // 
             label1.Anchor = AnchorStyles.Bottom;
             label1.AutoSize = true;
-            label1.Location = new Point(368, 570);
+            label1.Location = new Point(383, 570);
             label1.Name = "label1";
-            label1.Size = new Size(102, 15);
+            label1.Size = new Size(80, 15);
             label1.TabIndex = 18;
-            label1.Text = "Manual Rating 2 : ";
+            label1.Text = "Brian Rating : ";
             // 
             // comboSecondMapTreatment
             // 
@@ -302,8 +290,7 @@
             Controls.Add(lbl_Model);
             Controls.Add(btnBigPrevious);
             Controls.Add(btnBigNext);
-            Controls.Add(btnSelectCSV);
-            Controls.Add(btnSelectFolder);
+            Controls.Add(btnSelectCsvAndFolder);
             Controls.Add(btnNext);
             Controls.Add(btnPrevious);
             Controls.Add(pictureBox1);
@@ -323,8 +310,7 @@
         private FolderBrowserDialog folderBrowserDialog1;
         private FolderBrowserDialog folderBrowserDialog2;
         private OpenFileDialog openFileDialog1;
-        private Button btnSelectFolder;
-        private Button btnSelectCSV;
+        private Button btnSelectCsvAndFolder;
         private Button btnBigNext;
         private Button btnBigPrevious;
         private Label lbl_Model;

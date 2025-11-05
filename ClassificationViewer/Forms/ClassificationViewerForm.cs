@@ -24,43 +24,82 @@ namespace ClassificationViewer
         public ClassificationViewerForm()
         {
             InitializeComponent();
+            SetPredefinedFoldersAndCsvs();
+            InitializeDataSets();
         }
 
         //Buttons
-        private void btnSelectFolder_Click(object sender, EventArgs e)
-        {
-
-            using (var fbd = new FolderBrowserDialog())
-            {
-                // Set default path
-                fbd.SelectedPath = @"\\PQ05758\2024-Backup\RSP Imagery 2024\RSP TII Network Survey Imagery 2024\WE20240608\N51D224A\N51D224A_ROW";
-
-                if (fbd.ShowDialog() == DialogResult.OK)
-                {
-                    imageFiles = Directory.GetFiles(fbd.SelectedPath, "*.JPG")
-                                          .Concat(Directory.GetFiles(fbd.SelectedPath, "*.png"))
-                                          .ToList();
-
-                    currentIndex = 0;
-
-                    // Display the first image immediately
-                    if (imageFiles.Count > 0)
-                        DisplayImage();
-                }
-            }
-        }
-
-        private void btnSelectCsv_Click(object sender, EventArgs e)
+        private void btnSelectCsvAndFolder_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
-                ofd.InitialDirectory = @"C:\Users\KelanRafferty\Desktop\prediction_mismatch_report.csv";
-                if (ofd.ShowDialog() == DialogResult.OK)
+                ofd.InitialDirectory = @"C:\Users\KelanRafferty\Desktop";
+
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                // Load CSV
+                csvHelper.LoadCsv(ofd.FileName);
+                MessageBox.Show("CSV loaded successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Group CSV records by folder
+                var recordsByFolder = csvHelper.Records
+                    .Where(r => !string.IsNullOrWhiteSpace(r.ROW_folder))
+                    .GroupBy(r => r.ROW_folder)
+                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+                // Clear current images/blocks
+                imageFiles = new List<string>();
+                currentBlocks.Clear();
+                currentBlockIndex = 0;
+
+                // Load images from each folder
+                foreach (var kvp in recordsByFolder)
                 {
-                    csvHelper.LoadCsv(ofd.FileName);
-                    MessageBox.Show("CSV loaded successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string folderPath = kvp.Key;
+                    var records = kvp.Value;
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        MessageBox.Show($"Folder does not exist:\n{folderPath}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        continue;
+                    }
+
+                    var folderImages = Directory.GetFiles(folderPath, "*.JPG")
+                        .Concat(Directory.GetFiles(folderPath, "*.PNG"))
+                        .OrderBy(f =>
+                        {
+                            double? d = GetDistanceFromFilename(f);
+                            return d ?? double.MaxValue;
+                        })
+                        .ToList();
+
+                    imageFiles.AddRange(folderImages);
+
+                    // Ensure records are ordered by chainage (lowest to highest)
+                    records = records.OrderBy(r => r.MinOfChFrom).ToList();
+
+                    // Create merged logical blocks for this folder
+                    var folderBlocks = BulkUpdateForm.GetStrictBlocks(records);
+                    currentBlocks.AddRange(folderBlocks); // assuming Block can wrap a CsvRecord
                 }
+
+                if (imageFiles.Count == 0)
+                {
+                    MessageBox.Show("No images found in any CSV folder.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                currentIndex = 0;
+                DisplayImage();
+
+                // Move to the first block immediately
+                currentBlockIndex = 0;
+                MoveToBlock(currentBlockIndex);
+
+                hasUnsavedChanges = false;
+                btnSaveChanges.Enabled = true;
             }
         }
 
@@ -479,17 +518,30 @@ namespace ClassificationViewer
 
         // Core navigation logic
 
-        private void LoadBlocksForCurrentFolder()
+        private void LoadBlocksForCurrentDataset()
         {
-            if (imageFiles.Count == 0) return;
+            if (csvHelper.Records.Count == 0) return;
 
-            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[0]).Split(' ')[0];
-            var fileRecords = csvHelper.Records
-                .Where(r => r.Filename1 == currentFile)
-                .OrderBy(r => r.MinOfChFrom)
-                .ToList();
+            // Group CSV records by folder
+            var recordsByFolder = csvHelper.Records
+                .Where(r => !string.IsNullOrWhiteSpace(r.ROW_folder))
+                .GroupBy(r => r.ROW_folder, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.OrderBy(r => r.MinOfChFrom).ToList());
 
-            currentBlocks = BulkUpdateForm.GetStrictBlocks(fileRecords);
+            currentBlocks = new List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>();
+
+            // Iterate through each folder's records
+            foreach (var kvp in recordsByFolder)
+            {
+                var folderRecords = kvp.Value;
+                var folderBlocks = BulkUpdateForm.GetStrictBlocks(folderRecords); // returns tuples
+
+                currentBlocks.AddRange(folderBlocks);
+            }
+
+            // Sort blocks globally by start distance
+            currentBlocks = currentBlocks.OrderBy(b => b.Start).ToList();
+
             currentBlockIndex = 0;
 
             // Move to first image of first block
@@ -504,6 +556,7 @@ namespace ClassificationViewer
                 DisplayImage();
             }
         }
+
 
         private void NavigateToNextBlock()
         {
@@ -568,25 +621,47 @@ namespace ClassificationViewer
 
         private void MoveToBlock(int blockIndex)
         {
-            if (currentBlocks == null || blockIndex < 0 || blockIndex >= currentBlocks.Count) return;
+            if (currentBlocks == null || blockIndex < 0 || blockIndex >= currentBlocks.Count)
+                return;
 
             var block = currentBlocks[blockIndex];
+
+            // Try to find an image within the block range
             currentIndex = imageFiles.FindIndex(f =>
             {
                 double? d = GetDistanceFromFilename(f);
                 return d != null && d >= block.Start && d <= block.End;
             });
 
-            // Update CSV match for overlay
+            if (currentIndex == -1)
+            {
+                currentIndex = imageFiles.FindIndex(f =>
+                {
+                    double? d = GetDistanceFromFilename(f);
+                    return d != null && Math.Abs(d.Value - block.Start) < 0.5;
+                });
+
+                // If still not found, just stay at first image
+                if (currentIndex == -1)
+                    currentIndex = 0;
+            }
+
+            if (imageFiles.Count == 0 || currentIndex < 0 || currentIndex >= imageFiles.Count)
+                return;
+
             string currentFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0];
+
             var fileRecords = csvHelper.Records
                 .Where(r => r.Filename1 == currentFile)
                 .OrderBy(r => r.MinOfChFrom)
                 .ToList();
-            currentMatch = fileRecords.FirstOrDefault(r => Math.Abs(r.MinOfChFrom - block.Start) < 0.001);
+
+            currentMatch = fileRecords.FirstOrDefault(r =>
+                Math.Abs(r.MinOfChFrom - block.Start) < 0.001);
 
             DisplayImage();
         }
+
 
         private double? GetDistanceFromFilename(string imageFile)
         {
@@ -693,14 +768,32 @@ namespace ClassificationViewer
         {
             if (index < 0 || index >= surveyDataSets.Count) return;
 
-            currentDataSetIndex = index;
-            currentImageIndex = 0;
+            // Before switching, check for unsaved changes
+            if (hasUnsavedChanges && csvHelper != null)
+            {
+                var saveResult = MessageBox.Show(
+                    "You have unsaved CSV changes. Do you want to save before loading the next dataset?",
+                    "Save Changes",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
 
+                if (saveResult == DialogResult.Yes)
+                {
+                    csvHelper.SaveCsv(true); // same as btnSaveChanges logic
+                    hasUnsavedChanges = false;
+                    btnSaveChanges.Enabled = false;
+                    MessageBox.Show("CSV changes saved successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+
+            currentDataSetIndex = index;
             var set = surveyDataSets[index];
+
             imageFiles = set.ImageFiles;
             csvHelper = set.CsvData;
+            currentIndex = 0;
 
-            LoadBlocksForCurrentFolder(); // your existing method
+            LoadBlocksForCurrentDataset();
 
             MessageBox.Show($"Loaded dataset {index + 1}/{surveyDataSets.Count}\nFolder: {Path.GetFileName(set.Folder)}\nCSV: {Path.GetFileName(set.CsvPath)}");
         }
