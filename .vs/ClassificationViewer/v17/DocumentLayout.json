@@ -25,6 +25,14 @@
           "SelectedChildIndex": 4,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "CsvHelperClass.cs",
@@ -32,18 +40,10 @@
               "RelativeDocumentMoniker": "ClassificationViewer\\Classes\\CsvHelperClass.cs",
               "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\CsvHelperClass.cs",
               "RelativeToolTip": "ClassificationViewer\\Classes\\CsvHelperClass.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAwwMkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T14:11:13.403Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+              "WhenOpened": "2025-11-06T14:28:07.458Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -65,7 +65,7 @@
               "RelativeDocumentMoniker": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
               "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
               "RelativeToolTip": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
-              "ViewState": "AgIAAJgCAAAAAAAAAAAUwBgDAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAACsCAAAAAAAAAAAwwEYDAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-05T09:39:22.609Z",
               "EditorCaption": ""

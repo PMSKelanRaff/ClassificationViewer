@@ -1,3 +1,4 @@
+using System.Data;
 using System.Globalization;
 using ClassificationViewer.Classes;
 using CsvHelper;
@@ -547,13 +548,8 @@ namespace ClassificationViewer
             // Move to first image of first block
             if (currentBlocks.Count > 0)
             {
-                var firstBlock = currentBlocks[0];
-                currentIndex = imageFiles.FindIndex(f =>
-                {
-                    double? d = GetDistanceFromFilename(f);
-                    return d != null && d >= firstBlock.Start && d <= firstBlock.End;
-                });
-                DisplayImage();
+                currentBlockIndex = 0;
+                MoveToBlock(currentBlockIndex);
             }
         }
 
@@ -563,25 +559,23 @@ namespace ClassificationViewer
             if (currentBlocks == null || currentBlocks.Count == 0) return;
 
             currentBlockIndex++;
+            Console.WriteLine($"[DEBUG] Navigating to next block: {currentBlockIndex}");
 
             if (currentBlockIndex >= currentBlocks.Count)
             {
-                // Move to next dataset
+                Console.WriteLine("[DEBUG] End of current dataset reached. Moving to next dataset...");
                 if (currentDataSetIndex + 1 < surveyDataSets.Count)
                 {
                     currentDataSetIndex++;
                     ActivateDataSet(currentDataSetIndex);
-
-                    // Start at first block of new dataset
                     currentBlockIndex = 0;
                     MoveToBlock(currentBlockIndex);
                 }
                 else
                 {
-                    // Stay on last block of last dataset
+                    Console.WriteLine("[DEBUG] Already at last dataset.");
                     currentBlockIndex = currentBlocks.Count - 1;
                 }
-
                 return;
             }
 
@@ -617,51 +611,6 @@ namespace ClassificationViewer
 
             MoveToBlock(currentBlockIndex);
         }
-
-
-        private void MoveToBlock(int blockIndex)
-        {
-            if (currentBlocks == null || blockIndex < 0 || blockIndex >= currentBlocks.Count)
-                return;
-
-            var block = currentBlocks[blockIndex];
-
-            // Try to find an image within the block range
-            currentIndex = imageFiles.FindIndex(f =>
-            {
-                double? d = GetDistanceFromFilename(f);
-                return d != null && d >= block.Start && d <= block.End;
-            });
-
-            if (currentIndex == -1)
-            {
-                currentIndex = imageFiles.FindIndex(f =>
-                {
-                    double? d = GetDistanceFromFilename(f);
-                    return d != null && Math.Abs(d.Value - block.Start) < 0.5;
-                });
-
-                // If still not found, just stay at first image
-                if (currentIndex == -1)
-                    currentIndex = 0;
-            }
-
-            if (imageFiles.Count == 0 || currentIndex < 0 || currentIndex >= imageFiles.Count)
-                return;
-
-            string currentFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0];
-
-            var fileRecords = csvHelper.Records
-                .Where(r => r.Filename1 == currentFile)
-                .OrderBy(r => r.MinOfChFrom)
-                .ToList();
-
-            currentMatch = fileRecords.FirstOrDefault(r =>
-                Math.Abs(r.MinOfChFrom - block.Start) < 0.001);
-
-            DisplayImage();
-        }
-
 
         private double? GetDistanceFromFilename(string imageFile)
         {
@@ -768,7 +717,7 @@ namespace ClassificationViewer
         {
             if (index < 0 || index >= surveyDataSets.Count) return;
 
-            // Before switching, check for unsaved changes
+            // Check unsaved changes
             if (hasUnsavedChanges && csvHelper != null)
             {
                 var saveResult = MessageBox.Show(
@@ -779,7 +728,7 @@ namespace ClassificationViewer
 
                 if (saveResult == DialogResult.Yes)
                 {
-                    csvHelper.SaveCsv(true); // same as btnSaveChanges logic
+                    csvHelper.SaveCsv(true);
                     hasUnsavedChanges = false;
                     btnSaveChanges.Enabled = false;
                     MessageBox.Show("CSV changes saved successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -789,14 +738,125 @@ namespace ClassificationViewer
             currentDataSetIndex = index;
             var set = surveyDataSets[index];
 
-            imageFiles = set.ImageFiles;
             csvHelper = set.CsvData;
-            currentIndex = 0;
 
-            LoadBlocksForCurrentDataset();
+            // Instead of loading all blocks, load blocks for this folder
+            LoadBlocksForFolder(set.Folder);
 
             MessageBox.Show($"Loaded dataset {index + 1}/{surveyDataSets.Count}\nFolder: {Path.GetFileName(set.Folder)}\nCSV: {Path.GetFileName(set.CsvPath)}");
         }
 
+
+        private void MoveToBlock(int blockIndex)
+        {
+            if (currentBlocks == null || blockIndex < 0 || blockIndex >= currentBlocks.Count)
+                return;
+
+            var block = currentBlocks[blockIndex];
+            Console.WriteLine($"[DEBUG] Block {blockIndex}: {block.Start:F2} - {block.End:F2}");
+
+            // Find CSV record closest to block start
+            var csvRecord = csvHelper.Records
+                                     .Where(r => Math.Abs(r.MinOfChFrom - block.Start) < 0.01)
+                                     .FirstOrDefault();
+
+            double targetDistance = csvRecord?.MinOfChFrom ?? block.Start;
+
+            // Find first image within the block
+            currentIndex = imageFiles.FindIndex(f =>
+            {
+                double? d = GetDistanceFromFilename(f);
+                return d != null && d >= targetDistance && d <= block.End;
+            });
+
+            // If not found, pick the closest image to block start
+            if (currentIndex == -1)
+            {
+                currentIndex = imageFiles.FindIndex(f =>
+                {
+                    double? d = GetDistanceFromFilename(f);
+                    return d != null && Math.Abs(d.Value - targetDistance) < 0.5;
+                });
+
+                if (currentIndex == -1)
+                {
+                    Console.WriteLine("[DEBUG] No image found in this block, defaulting to first image");
+                    currentIndex = 0;
+                }
+            }
+
+            string selectedFile = Path.GetFileName(imageFiles[currentIndex]);
+            double? distance = GetDistanceFromFilename(imageFiles[currentIndex]);
+            Console.WriteLine($"[DEBUG] Selected image: {selectedFile} (distance={distance:F3})");
+
+            // CSV records for this image
+            string baseFile = Path.GetFileNameWithoutExtension(imageFiles[currentIndex]).Split(' ')[0].Trim();
+            var fileRecords = csvHelper.Records
+                                       .Where(r => r.Filename1.Trim() == baseFile)
+                                       .OrderBy(r => r.MinOfChFrom)
+                                       .ToList();
+
+            if (fileRecords.Count == 0)
+            {
+                Console.WriteLine($"[DEBUG] No CSV records found for {baseFile}");
+            }
+            else
+            {
+                var matched = fileRecords.FirstOrDefault(r => Math.Abs(r.MinOfChFrom - targetDistance) < 0.01);
+                if (matched != null)
+                {
+                    Console.WriteLine($"[DEBUG] Matched CSV: Min={matched.MinOfChFrom:F2}, Max={matched.MaxOfChTo:F2}");
+                }
+                else
+                {
+                    var closest = fileRecords.OrderBy(r => Math.Abs(r.MinOfChFrom - targetDistance)).First();
+                    Console.WriteLine("[DEBUG] No exact CSV match for current block start");
+                    Console.WriteLine($"[DEBUG] Closest CSV: Min={closest.MinOfChFrom:F2}, Max={closest.MaxOfChTo:F2}, ?={Math.Abs(closest.MinOfChFrom - targetDistance):F3}");
+                }
+            }
+
+            DisplayImage();
+        }
+
+        private void LoadBlocksForFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                MessageBox.Show($"Folder does not exist:\n{folderPath}");
+                return;
+            }
+
+            // Get images in this folder
+            imageFiles = Directory.GetFiles(folderPath, "*.JPG")
+                                  .Concat(Directory.GetFiles(folderPath, "*.PNG"))
+                                  .OrderBy(f => GetDistanceFromFilename(f) ?? double.MaxValue)
+                                  .ToList();
+
+            if (imageFiles.Count == 0)
+            {
+                MessageBox.Show("No images found in this folder.");
+                return;
+            }
+
+            // Get CSV records for this folder only
+            var folderRecords = csvHelper.Records
+                                         .Where(r => string.Equals(r.ROW_folder?.TrimEnd('\\'), folderPath.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
+                                         .OrderBy(r => r.MinOfChFrom)
+                                         .ToList();
+
+            // Build blocks for this folder only
+            currentBlocks = BulkUpdateForm.GetStrictBlocks(folderRecords)
+                                          .OrderBy(b => b.Start)
+                                          .ToList();
+
+            currentBlockIndex = 0;
+            currentIndex = 0;
+
+            if (currentBlocks.Count > 0)
+                MoveToBlock(currentBlockIndex);
+
+            Console.WriteLine($"[DEBUG] Loaded folder: {folderPath}");
+            Console.WriteLine($"[DEBUG] {imageFiles.Count} images, {currentBlocks.Count} blocks, {folderRecords.Count} CSV records");
+        }
     }
 }
