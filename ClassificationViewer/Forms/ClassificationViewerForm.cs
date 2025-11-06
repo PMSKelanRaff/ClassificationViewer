@@ -519,41 +519,6 @@ namespace ClassificationViewer
 
         // Core navigation logic
 
-        private void LoadBlocksForCurrentDataset()
-        {
-            if (csvHelper.Records.Count == 0) return;
-
-            // Group CSV records by folder
-            var recordsByFolder = csvHelper.Records
-                .Where(r => !string.IsNullOrWhiteSpace(r.ROW_folder))
-                .GroupBy(r => r.ROW_folder, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(g => g.Key, g => g.OrderBy(r => r.MinOfChFrom).ToList());
-
-            currentBlocks = new List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>();
-
-            // Iterate through each folder's records
-            foreach (var kvp in recordsByFolder)
-            {
-                var folderRecords = kvp.Value;
-                var folderBlocks = BulkUpdateForm.GetStrictBlocks(folderRecords); // returns tuples
-
-                currentBlocks.AddRange(folderBlocks);
-            }
-
-            // Sort blocks globally by start distance
-            currentBlocks = currentBlocks.OrderBy(b => b.Start).ToList();
-
-            currentBlockIndex = 0;
-
-            // Move to first image of first block
-            if (currentBlocks.Count > 0)
-            {
-                currentBlockIndex = 0;
-                MoveToBlock(currentBlockIndex);
-            }
-        }
-
-
         private void NavigateToNextBlock()
         {
             if (currentBlocks == null || currentBlocks.Count == 0) return;
@@ -717,7 +682,7 @@ namespace ClassificationViewer
         {
             if (index < 0 || index >= surveyDataSets.Count) return;
 
-            // Check unsaved changes
+            // Before switching, check for unsaved changes
             if (hasUnsavedChanges && csvHelper != null)
             {
                 var saveResult = MessageBox.Show(
@@ -728,7 +693,7 @@ namespace ClassificationViewer
 
                 if (saveResult == DialogResult.Yes)
                 {
-                    csvHelper.SaveCsv(true);
+                    csvHelper.SaveCsv(true); // Make sure this actually writes changes
                     hasUnsavedChanges = false;
                     btnSaveChanges.Enabled = false;
                     MessageBox.Show("CSV changes saved successfully!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -738,14 +703,26 @@ namespace ClassificationViewer
             currentDataSetIndex = index;
             var set = surveyDataSets[index];
 
+            // Assign CSV helper
             csvHelper = set.CsvData;
 
-            // Instead of loading all blocks, load blocks for this folder
-            LoadBlocksForFolder(set.Folder);
+            // Get all unique folders in this dataset that have images
+            var foldersWithImages = set.ImageFiles
+                                       .Select(f => Path.GetDirectoryName(f))
+                                       .Distinct()
+                                       .ToList();
 
-            MessageBox.Show($"Loaded dataset {index + 1}/{surveyDataSets.Count}\nFolder: {Path.GetFileName(set.Folder)}\nCSV: {Path.GetFileName(set.CsvPath)}");
+            if (foldersWithImages.Count == 0)
+            {
+                MessageBox.Show("No folders with images found in this dataset.");
+                return;
+            }
+
+            // Load blocks for the first folder in this dataset
+            LoadBlocksForFolder(foldersWithImages[0]);
+
+            MessageBox.Show($"Loaded dataset {index + 1}/{surveyDataSets.Count}\nFolder: {Path.GetFileName(foldersWithImages[0])}\nCSV: {Path.GetFileName(set.CsvPath)}");
         }
-
 
         private void MoveToBlock(int blockIndex)
         {
@@ -826,6 +803,9 @@ namespace ClassificationViewer
                 return;
             }
 
+            // Normalize folder path (remove trailing backslash)
+            folderPath = folderPath.TrimEnd('\\');
+
             // Get images in this folder
             imageFiles = Directory.GetFiles(folderPath, "*.JPG")
                                   .Concat(Directory.GetFiles(folderPath, "*.PNG"))
@@ -838,15 +818,22 @@ namespace ClassificationViewer
                 return;
             }
 
-            // Get CSV records for this folder only
+            // Get CSV records for this folder only, robust folder path comparison
             var folderRecords = csvHelper.Records
-                                         .Where(r => string.Equals(r.ROW_folder?.TrimEnd('\\'), folderPath.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
-                                         .OrderBy(r => r.MinOfChFrom)
+                                         .Where(r => !string.IsNullOrEmpty(r.ROW_folder) &&
+                                                     string.Equals(r.ROW_folder.TrimEnd('\\'), folderPath, StringComparison.OrdinalIgnoreCase))
+                                         .OrderBy(r => r.MinOfChFrom) // <-- SORT by MinOfChFrom
                                          .ToList();
 
-            // Build blocks for this folder only
+            if (folderRecords.Count == 0)
+            {
+                MessageBox.Show("No CSV records found for this folder.");
+                return;
+            }
+
+            // Build blocks for this folder
             currentBlocks = BulkUpdateForm.GetStrictBlocks(folderRecords)
-                                          .OrderBy(b => b.Start)
+                                          .OrderBy(b => b.Start) // sort blocks globally by start distance
                                           .ToList();
 
             currentBlockIndex = 0;

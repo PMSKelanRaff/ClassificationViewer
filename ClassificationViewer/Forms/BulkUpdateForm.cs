@@ -75,25 +75,27 @@ namespace ClassificationViewer
             Close();
         }
 
-        public void PreselectRange(double start, double end)
+        public void PreselectRange(double blockStart, double blockEnd)
         {
-            foreach (var item in comboStart.Items)
-            {
-                if (item is DistanceOption opt && Math.Abs(opt.Value - start) < 0.001)
-                {
-                    comboStart.SelectedItem = item;
-                    break;
-                }
-            }
+            const double Tolerance = 0.01;
 
-            foreach (var item in comboEnd.Items)
-            {
-                if (item is DistanceOption opt && Math.Abs(opt.Value - end) < 0.001)
-                {
-                    comboEnd.SelectedItem = item;
-                    break;
-                }
-            }
+            // Build lists of start and end values from ComboBox items
+            var startOptions = comboStart.Items.OfType<DistanceOption>().ToList();
+            var endOptions = comboEnd.Items.OfType<DistanceOption>().ToList();
+
+            // Find closest start
+            var closestStart = startOptions
+                .OrderBy(o => Math.Abs(o.Value - blockStart))
+                .FirstOrDefault();
+            if (closestStart != null && Math.Abs(closestStart.Value - blockStart) <= Tolerance)
+                comboStart.SelectedItem = closestStart;
+
+            // Find closest end
+            var closestEnd = endOptions
+                .OrderBy(o => Math.Abs(o.Value - blockEnd))
+                .FirstOrDefault();
+            if (closestEnd != null && Math.Abs(closestEnd.Value - blockEnd) <= Tolerance)
+                comboEnd.SelectedItem = closestEnd;
         }
 
         public static List<(double Start, double End, string Surface, string Treatment, string SecondTreatment)>

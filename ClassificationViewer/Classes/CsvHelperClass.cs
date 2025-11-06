@@ -89,42 +89,61 @@ namespace ClassificationViewer.Classes
 
         public void SaveCsv(bool saveAsUpdatedFile = false)
         {
-            if (string.IsNullOrEmpty(loadedCsvPath))
-            {
-                Console.WriteLine("No CSV path loaded — nothing to save.");
-                return;
-            }
+            if (string.IsNullOrEmpty(loadedCsvPath)) return;
 
-            string outputPath = loadedCsvPath;
-            if (saveAsUpdatedFile)
-            {
-                string dir = Path.GetDirectoryName(loadedCsvPath);
-                string fileName = Path.GetFileNameWithoutExtension(loadedCsvPath);
-                string ext = Path.GetExtension(loadedCsvPath);
-                outputPath = Path.Combine(dir, $"{fileName}_updated{ext}");
-            }
+            // Create output folder if needed
+            string outputDir = Path.Combine(Path.GetDirectoryName(loadedCsvPath), "Updated");
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
 
-            using (var writer = new StreamWriter(outputPath, false, Encoding.UTF8))
-            {
-                // Write header with commas
-                // Write header with new column
-                writer.WriteLine("RID,SU,WE,Filename1,ROW_folder,MinOfChFrom,MaxOfChTo,SurfaceType,MapTreatment,prediction_match,images_found_in_range,num_images_in_range,SecondMapTreatment");
+            string outputPath = saveAsUpdatedFile
+                ? Path.Combine(outputDir, Path.GetFileName(loadedCsvPath))
+                : loadedCsvPath;
 
-                foreach (var record in records)
+            // Load all lines from original CSV
+            var allLines = File.ReadAllLines(loadedCsvPath).ToList();
+            if (allLines.Count == 0) return;
+
+            string header = allLines[0];
+            var dataLines = allLines.Skip(1).ToList();
+
+            // Build a lookup of currently loaded records
+            var updatedLookup = records
+                .GroupBy(r => $"{r.ROW_folder}|{r.MinOfChFrom:0.000}|{r.MaxOfChTo:0.000}")
+                .ToDictionary(g => g.Key, g => g.Last());
+
+            // Update only matching lines
+            for (int i = 0; i < dataLines.Count; i++)
+            {
+                var parts = dataLines[i].Split(',');
+                if (parts.Length < 12) continue;
+
+                string folder = parts[4].Trim();
+                if (!double.TryParse(parts[5], NumberStyles.Any, CultureInfo.InvariantCulture, out double min)) continue;
+                if (!double.TryParse(parts[6], NumberStyles.Any, CultureInfo.InvariantCulture, out double max)) continue;
+
+                string key = $"{folder}|{min:0.000}|{max:0.000}";
+
+                if (updatedLookup.TryGetValue(key, out var record))
                 {
-                    writer.WriteLine(
-                        $"{record.RID},{record.SU},{record.WE},{record.Filename1},{record.ROW_folder}," +
-                        $"{record.MinOfChFrom.ToString("0.0##", CultureInfo.InvariantCulture)}," +
-                        $"{record.MaxOfChTo.ToString("0.0##", CultureInfo.InvariantCulture)}," +
-                        $"{record.SurfaceType},{record.MapTreatment}," +
-                        $"{NormalizeBool(record.PredictionMatch)},{NormalizeBool(record.ImagesFoundInRange)}," +
-                        $"{record.NumImagesInRange},{record.SecondMapTreatment ?? "None"}"
-                    );
+                    // Replace only the fields that have been updated
+                    parts[7] = record.SurfaceType;
+                    parts[8] = record.MapTreatment;
+                    parts[12] = record.SecondMapTreatment ?? "None";
+                    parts[9] = record.PredictionMatch;
+                    parts[10] = record.ImagesFoundInRange;
+                    parts[11] = record.NumImagesInRange.ToString();
+
+                    dataLines[i] = string.Join(",", parts);
                 }
             }
 
-            Console.WriteLine($"Saved {records.Count} CSV records to {outputPath}");
+            // Write all lines back
+            File.WriteAllLines(outputPath, new[] { header }.Concat(dataLines), Encoding.UTF8);
+            Console.WriteLine($"Saved updated records to {outputPath}");
         }
+
+
 
         private string NormalizeBool(string? value)
         {
