@@ -26,7 +26,8 @@ namespace ClassificationViewer.Classes
             CsvPath = csvPath;
 
             if (!string.IsNullOrEmpty(csvPath))
-                CsvData.LoadCsv(csvPath);
+                // MODIFIED LINE: Pass the folder to LoadCsv
+                CsvData.LoadCsv(csvPath, Folder);
         }
 
         // Optional helper to clear dataset

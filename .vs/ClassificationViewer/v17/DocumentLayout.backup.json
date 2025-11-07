@@ -7,16 +7,20 @@
       "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\forms\\classificationviewerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\forms\\classificationviewerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\forms\\classificationviewerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\classes\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\classes\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\forms\\classificationviewerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\forms\\classificationviewerform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\classificationviewer.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\classificationviewer.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\forms\\bulkupdateform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\forms\\bulkupdateform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\classes\\csvhelperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\classes\\csvhelperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|c:\\users\\kelanrafferty\\source\\repos\\classificationviewer\\classificationviewer\\classes\\surveydataset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{65A09B22-B69E-4453-81C7-A55353D863FB}|ClassificationViewer\\ClassificationViewer.csproj|solutionrelative:classificationviewer\\classes\\surveydataset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,53 +42,66 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ClassificationViewerForm.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.Designer.cs",
-              "RelativeDocumentMoniker": "ClassificationViewer\\Forms\\ClassificationViewerForm.Designer.cs",
-              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.Designer.cs",
-              "RelativeToolTip": "ClassificationViewer\\Forms\\ClassificationViewerForm.Designer.cs",
-              "ViewState": "AgIAAH8AAAAAAAAAAAAvwKgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T12:04:54.041Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ClassificationViewerForm.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
-              "RelativeDocumentMoniker": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
-              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.cs [Design]",
-              "RelativeToolTip": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T12:02:50.636Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BulkUpdateForm.cs",
-              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\BulkUpdateForm.cs",
-              "RelativeDocumentMoniker": "ClassificationViewer\\Forms\\BulkUpdateForm.cs",
-              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\BulkUpdateForm.cs",
-              "RelativeToolTip": "ClassificationViewer\\Forms\\BulkUpdateForm.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAABhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T11:54:48.928Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ClassificationViewerForm.cs",
               "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
               "RelativeDocumentMoniker": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
               "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
               "RelativeToolTip": "ClassificationViewer\\Forms\\ClassificationViewerForm.cs",
-              "ViewState": "AgIAADgBAAAAAAAAAAAAAGEBAAA8AAAAAAAAAA==",
+              "ViewState": "AgIAAE8BAAAAAAAAAAAewGMBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T09:39:22.609Z",
+              "WhenOpened": "2025-11-07T12:34:17.418Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\Program.cs",
+              "RelativeDocumentMoniker": "ClassificationViewer\\Classes\\Program.cs",
+              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\Program.cs",
+              "RelativeToolTip": "ClassificationViewer\\Classes\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T12:34:11.301Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ClassificationViewer",
+              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\ClassificationViewer.csproj",
+              "RelativeDocumentMoniker": "ClassificationViewer\\ClassificationViewer.csproj",
+              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\ClassificationViewer.csproj",
+              "RelativeToolTip": "ClassificationViewer\\ClassificationViewer.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-07T12:32:09.135Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CsvHelperClass.cs",
+              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\CsvHelperClass.cs",
+              "RelativeDocumentMoniker": "ClassificationViewer\\Classes\\CsvHelperClass.cs",
+              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\CsvHelperClass.cs",
+              "RelativeToolTip": "ClassificationViewer\\Classes\\CsvHelperClass.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAiwCIAAABJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T12:24:16.118Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SurveyDataSet.cs",
+              "DocumentMoniker": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\SurveyDataSet.cs",
+              "RelativeDocumentMoniker": "ClassificationViewer\\Classes\\SurveyDataSet.cs",
+              "ToolTip": "C:\\Users\\KelanRafferty\\source\\repos\\ClassificationViewer\\ClassificationViewer\\Classes\\SurveyDataSet.cs",
+              "RelativeToolTip": "ClassificationViewer\\Classes\\SurveyDataSet.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T12:22:54.01Z",
               "EditorCaption": ""
             }
           ]

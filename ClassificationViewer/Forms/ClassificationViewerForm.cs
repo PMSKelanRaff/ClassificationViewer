@@ -382,7 +382,7 @@ namespace ClassificationViewer
                     // Add third line only if not None
                     if (!string.IsNullOrEmpty(extra) && extra != "None")
                     {
-                        lines = lines.Concat(new string[] { $"Manual 2 : {extra}" }).ToArray();
+                        lines = lines.Concat(new string[] { $"Brian : {extra}" }).ToArray();
                     }
                 }
                 else
