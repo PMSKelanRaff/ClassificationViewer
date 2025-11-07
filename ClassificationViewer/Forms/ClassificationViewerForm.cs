@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.Globalization;
 using ClassificationViewer.Classes;
 using CsvHelper;
@@ -248,8 +248,6 @@ namespace ClassificationViewer
                 .OrderBy(r => r.MinOfChFrom)
                 .ToList();
 
-            // Decide which field to use as reference (SurfaceType or MapTreatment)
-            // You could even let the user pick with a toggle.
             var (start, end) = FindBlockForCurrentRecord(currentMatch);
 
             using (var form = new BulkUpdateForm(csvHelper, surfaceOptions, fileRecords, start, end))
@@ -262,14 +260,23 @@ namespace ClassificationViewer
                     double blockStart = form.StartDistance;
                     double blockEnd = form.EndDistance;
 
+                    // Apply all updates here
                     if (!string.IsNullOrEmpty(form.SelectedSurfaceType))
                         csvHelper.BulkUpdateSurfaceType(blockStart, blockEnd, form.SelectedSurfaceType);
 
                     if (!string.IsNullOrEmpty(form.SelectedMapTreatment))
                         csvHelper.BulkUpdateMapTreatment(blockStart, blockEnd, form.SelectedMapTreatment);
 
+                    // Make sure to apply the third value
+                    if (!string.IsNullOrEmpty(form.SelectedSecondMapTreatment))
+                        csvHelper.BulkUpdateSecondMapTreatment(blockStart, blockEnd, form.SelectedSecondMapTreatment);
+
                     hasUnsavedChanges = true;
                     btnSaveChanges.Enabled = true;
+
+                    
+                    // Add this line to refresh the picture box, labels, and comboboxes
+                    DisplayImage();
                 }
             }
         }
@@ -335,11 +342,16 @@ namespace ClassificationViewer
                 comboMapTreatment.SelectedItem = surfaceOptions.Contains(currentMatch.MapTreatment)
                     ? currentMatch.MapTreatment
                     : "Unknown";
+
+                comboSecondMapTreatment.SelectedItem = surfaceOptions.Contains(currentMatch.SecondMapTreatment)
+                    ? currentMatch.SecondMapTreatment
+                    : "Unknown";
             }
             else
             {
                 comboSurfaceType.SelectedItem = null;
                 comboMapTreatment.SelectedItem = null;
+                comboSecondMapTreatment.SelectedItem = null;
             }
 
             // Draw overlay

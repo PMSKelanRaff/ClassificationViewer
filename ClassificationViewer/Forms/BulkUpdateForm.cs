@@ -61,15 +61,12 @@ namespace ClassificationViewer
                 return;
             }
 
+            // Set public properties for the main form to read
             StartDistance = startOpt.Value;
             EndDistance = endOpt.Value;
             SelectedSurfaceType = comboSurfaceType.SelectedItem?.ToString();
             SelectedMapTreatment = comboMapTreatment.SelectedItem?.ToString();
             SelectedSecondMapTreatment = comboSecondMapTreatment.SelectedItem?.ToString(); // NEW
-
-            csvHelper.BulkUpdateSurfaceType(StartDistance, EndDistance, SelectedSurfaceType);
-            csvHelper.BulkUpdateMapTreatment(StartDistance, EndDistance, SelectedMapTreatment);
-            csvHelper.BulkUpdateSecondMapTreatment(StartDistance, EndDistance, SelectedSecondMapTreatment);
 
             DialogResult = DialogResult.OK;
             Close();
@@ -153,5 +150,7 @@ namespace ClassificationViewer
         {
 
         }
+
+
     }
 }

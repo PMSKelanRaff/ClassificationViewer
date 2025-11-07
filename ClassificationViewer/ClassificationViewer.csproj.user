@@ -10,8 +10,5 @@
     <Compile Update="Forms\ClassificationViewerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\FolderSelectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
 </Project>

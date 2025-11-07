@@ -143,14 +143,6 @@ namespace ClassificationViewer.Classes
             Console.WriteLine($"Saved updated records to {outputPath}");
         }
 
-
-
-        private string NormalizeBool(string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value)) return "False";
-            return value.Trim().Equals("True", StringComparison.OrdinalIgnoreCase) ? "True" : "False";
-        }
-
         public List<CsvRecord> FindMatches(string imageFile)
         {
             double? distance = GetDistanceFromFilename(imageFile);
@@ -178,6 +170,9 @@ namespace ClassificationViewer.Classes
             return null;
         }
 
+
+
+        //bulk updating logic
         public void BulkUpdateSurfaceType(double startDistance, double endDistance, string newSurfaceType)
         {
             foreach (var r in records)
@@ -189,6 +184,7 @@ namespace ClassificationViewer.Classes
                     r.PredictionMatch = r.SurfaceType == r.MapTreatment && !string.IsNullOrEmpty(r.SurfaceType) ? "True" : "False";
                 }
             }
+           
         }
 
         public void BulkUpdateMapTreatment(double startDistance, double endDistance, string newMapTreatment)
@@ -215,9 +211,6 @@ namespace ClassificationViewer.Classes
                 }
             }
         }
-
-        //
-
 
 
 
